@@ -122,6 +122,10 @@ function Signup(props) {
           <Link to="/signin" style={{ textDecoration: 'none', marginLeft: '108px', fontSize: '19px' }}>
             Already have account? Sign in now!
           </Link>
+          <br></br>
+          <Link to="/" style={{ textDecoration: 'none', marginLeft: '215px', fontSize: '19px' }}>
+            Go to shop
+          </Link>
         </form>
       </div>
     </div>

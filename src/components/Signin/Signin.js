@@ -36,7 +36,7 @@ function Login(props) {
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
       // console.log(res.data.tokens);
-      navigate('/home');
+      navigate('/');
     }
   };
 
@@ -66,6 +66,9 @@ function Login(props) {
           </Link>
           <Link to="/signup" style={{ textDecoration: 'none', fontSize: '19px' }}>
             Or Create new account!
+          </Link>
+          <Link to="/" style={{ textDecoration: 'none', fontSize: '19px' }}>
+            Shop now!
           </Link>
         </form>
       </div>

@@ -10,7 +10,6 @@ function UserPage() {
   }, []);
   const getAllProduct = async () => {
     const product = await CustomAxios.get('/api/v1/products/', {
-      headers: { 'x-accesstoken': tokens.accessToken },
       params: {
         limit: 1000,
         offset: 0,

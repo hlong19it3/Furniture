@@ -23,10 +23,12 @@ export const userRoutes = [
   {
     path: configFile.routes.signInUser,
     component: Signin,
+    layout: React.Fragment,
   },
   {
     path: configFile.routes.signUpUser,
     component: Signup,
+    layout: React.Fragment,
   },
   {
     path: configFile.routes.home,

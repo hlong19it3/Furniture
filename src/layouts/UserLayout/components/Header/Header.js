@@ -1,10 +1,21 @@
 import React from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
+  const nav = useNavigate();
+  const handleLogin = () => {
+    nav('/signin');
+  };
+  const handleSignOut = () => {
+    localStorage.removeItem('userInfo');
+    nav('/');
+  };
+  const tokens = localStorage.getItem('userInfo');
+
   return (
     <>
-      <header class="py-4 shadow-sm bg-white">
+      <header class="flex py-4 shadow-sm bg-white h-32">
         <div class="container flex items-center justify-between">
           <a href="index.html">
             <img
@@ -43,7 +54,7 @@ function Header() {
               <div class="text-2xl">
                 <i class="fa-solid fa-bag-shopping"></i>
               </div>
-              <div class="text-xs leading-3">Cart</div>
+              <div class="text-xl leading-3">Cart</div>
               <div class="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
                 2
               </div>
@@ -52,7 +63,7 @@ function Header() {
               <div class="text-2xl">
                 <i class="fa-regular fa-user"></i>
               </div>
-              <div class="text-xs leading-3">Account</div>
+              <div class="text-xl leading-3">Account</div>
             </a>
           </div>
         </div>
@@ -108,9 +119,15 @@ function Header() {
                 Contact us
               </a>
             </div>
-            <a href="##" class="text-gray-200 hover:text-white transition">
-              Login/Register
-            </a>
+            {tokens ? (
+              <button href="##" onClick={handleSignOut} class="text-gray-200 hover:text-white transition">
+                Sign out
+              </button>
+            ) : (
+              <button href="##" onClick={handleLogin} class="text-gray-200 hover:text-white transition">
+                Sign in/Sign up
+              </button>
+            )}
           </div>
         </div>
       </nav>
