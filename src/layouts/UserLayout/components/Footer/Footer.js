@@ -3,9 +3,13 @@ function Footer() {
     <footer class="bg-white pt-16 pb-12 border-t border-gray-100">
       <div class="container grid grid-cols-3">
         <div class="col-span-1 space-y-8 mr-2">
-          <img src="../assets/images/logo.svg" alt="logo" class="w-30" />
+          <img
+            src="https://img.freepik.com/free-vector/furniture-logo_23-2148613625.jpg?w=740&t=st=1670919607~exp=1670920207~hmac=459481d738b51b045afba4cb953468c6d79c718cc7570becdba55551e5c43a37"
+            alt="logo"
+            class="w-20 h-20 "
+          />
           <div class="mr-2">
-            <p class="text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, hic?</p>
+            <p class="text-gray-500">Furniture Online Store</p>
           </div>
           <div class="flex space-x-6">
             <a href="##" class="text-gray-400 hover:text-gray-500">

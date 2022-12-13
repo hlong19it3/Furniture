@@ -25,7 +25,7 @@ function UserPage() {
           <select
             name="sort"
             id="sort"
-            class="w-44 text-sm text-gray-600 py-3 px-4 border-gray-300 shadow-sm rounded focus:ring-primary focus:border-primary"
+            class="w-44 text-l text-gray-600 py-3 px-4 border-gray-300 shadow-sm rounded focus:ring-primary focus:border-primary"
           >
             <option value="">Default sorting</option>
             <option value="price-low-to-high">Price low to high</option>
@@ -91,8 +91,8 @@ function UserPage() {
                     <p class="text-base  font-regular">{product.Manufacturer.manufacturerName}</p>
                   </div>
                   <div class="flex items-baseline mb-1 space-x-2">
-                    <p class="text-xl text-primary font-semibold">{product.salePrice + ' VND'}</p>
-                    <p class="text-sm text-gray-400 line-through">{product.price + ' VND'}</p>
+                    <p class="text-xl text-primary font-semibold">{product.salePrice.toLocaleString() + ' VND'}</p>
+                    <p class="text-sm text-gray-400 line-through">{product.price.toLocaleString() + ' VND'}</p>
                   </div>
                   <div class="flex items-center">
                     <div class="flex gap-1 text-sm text-yellow-400"></div>

@@ -168,6 +168,7 @@ function CategoryPage() {
               lable: 'Type',
               value: type,
               setValue: setType,
+              placeHolder: 'Type',
             },
             {
               lable: 'Parent Category Id',
@@ -175,6 +176,7 @@ function CategoryPage() {
               setValue: setParentCategoryId,
               type: 'droplist',
               from: 'categoryParent',
+              selectTitle: 'Select Parent Category',
             },
           ]}
           toggleModal={() => {
@@ -198,6 +200,7 @@ function CategoryPage() {
               defaultValue: parentCategoryId,
               type: 'droplist',
               from: 'categoryParent',
+              selectTitle: 'Select Parent Category',
             },
           ]}
           action="edit"

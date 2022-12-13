@@ -1,8 +1,9 @@
 import { toFormData } from 'axios';
 import { useEffect, useState } from 'react';
 import { Modal } from '~/components/Modal';
-import CustomAxios from '~/config/api';
+import CustomAxios, { baseURL } from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
+import { Image } from '~/components/Image';
 
 const limit = 5;
 
@@ -23,9 +24,10 @@ function ProductPage() {
   const [category, setCategoryProduct] = useState(1);
   const [fileImage, setFileImage] = useState();
 
+  if (fileImage) fileImage.preview = URL.createObjectURL(fileImage);
+
   const [categories, setCategory] = useState([]);
-  const [manufacturers, setManufacturer] = useState([]);
-  console.log(salePrice);
+  const [manufacturers, setManufacturers] = useState([]);
   //search
   const [searchValue, setSearchValue] = useState('');
 
@@ -89,8 +91,9 @@ function ProductPage() {
       headers: { 'x-accesstoken': tokens.accessToken },
     });
 
-    setManufacturer(res.data);
+    setManufacturers(res.data);
   };
+
   const deleteProduct = async (id) => {
     try {
       await CustomAxios.delete(`/api/v1/products/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
@@ -150,6 +153,7 @@ function ProductPage() {
     } catch (error) {
       console.log(error);
     }
+    URL.revokeObjectURL(fileImage.preview);
     setName('');
     setPrice(0);
     setSalePrice(0);
@@ -201,6 +205,7 @@ function ProductPage() {
     } catch (error) {
       console.log(error);
     }
+    URL.revokeObjectURL(fileImage.preview);
     setName('');
     setPrice(0);
     setSalePrice(0);
@@ -221,6 +226,7 @@ function ProductPage() {
               lable: 'Name',
               value: name,
               setValue: setName,
+              placeHolder: 'Product Name',
             },
             {
               lable: 'Price',
@@ -236,17 +242,20 @@ function ProductPage() {
               lable: 'Color',
               value: color,
               setValue: setColor,
+              placeHolder: 'Product Color',
             },
             {
               lable: 'Description',
               value: description,
               setValue: setDescription,
+              placeHolder: 'Description',
             },
             {
               lable: 'Image',
               setValue: setFileImage,
               type: 'file',
               name: 'url',
+              preview: fileImage ? fileImage.preview : null,
             },
             {
               lable: 'Manufacturer',
@@ -254,6 +263,7 @@ function ProductPage() {
               setValue: setManufacturerProduct,
               type: 'droplist',
               from: 'manufacturer',
+              selectTitle: 'Select Manufacturer',
             },
             {
               lable: 'Category',
@@ -261,9 +271,19 @@ function ProductPage() {
               setValue: setCategoryProduct,
               type: 'droplist',
               from: 'categoryChildren',
+              selectTitle: 'Select Category',
             },
           ]}
           toggleModal={() => {
+            fileImage && URL.revokeObjectURL(fileImage.preview);
+            setName('');
+            setPrice(0);
+            setColor('');
+            setSalePrice(0);
+            setDescription('');
+            setManufacturerProduct(1);
+            setCategoryProduct(1);
+            setFileImage();
             setToggleModalCreate(false);
           }}
           onCLickSubmit={handleSubmitCreate}
@@ -279,12 +299,12 @@ function ProductPage() {
             },
             {
               lable: 'Price',
-              value: price,
+              value: price.toLocaleString(),
               setValue: setPrice,
             },
             {
               lable: 'Sale Price',
-              value: salePrice,
+              value: salePrice.toLocaleString(),
               setValue: setSalePrice,
             },
             {
@@ -302,6 +322,7 @@ function ProductPage() {
               setValue: setFileImage,
               type: 'file',
               name: 'url',
+              preview: fileImage ? fileImage.preview : null,
             },
             {
               lable: 'Manufacturer',
@@ -310,6 +331,7 @@ function ProductPage() {
               type: 'droplist',
               from: 'manufacturer',
               defaultValue: manufacturer,
+              selectTitle: 'Select Manufacturer',
             },
             {
               lable: 'Category',
@@ -318,15 +340,18 @@ function ProductPage() {
               type: 'droplist',
               defaultValue: category,
               from: 'categoryChildren',
+              selectTitle: 'Select Category',
             },
           ]}
           action="edit"
           toggleModal={() => {
+            fileImage && URL.revokeObjectURL(fileImage.preview);
             setToggleModalEdit(false);
             setName('');
             setPrice(0);
             setColor('');
             setSalePrice(0);
+            setFileImage();
             setDescription('');
             setManufacturerProduct(1);
             setCategoryProduct(1);
@@ -369,6 +394,9 @@ function ProductPage() {
                 Name
               </th>
               <th scope="col" className="py-3 px-6">
+                Image
+              </th>
+              <th scope="col" className="py-3 px-6">
                 Manufacturer
               </th>
               <th scope="col" className="py-3 px-6">
@@ -399,11 +427,18 @@ function ProductPage() {
               >
                 <td className="py-4 px-6">{product.name}</td>
                 <td className="py-4 px-6">
+                  <Image
+                    src={baseURL + '/' + product.ImageProducts[0].url}
+                    alt="product but error"
+                    className={'w-20 h-17'}
+                  />
+                </td>
+                <td className="py-4 px-6">
                   {product.Manufacturer.manufacturerName ? product.Manufacturer.manufacturerName : ''}
                 </td>
                 <td className="py-4 px-6">{product.Category.type}</td>
-                <td className="py-4 px-6">{product.price}</td>
-                <td className="py-4 px-6">{product.salePrice}</td>
+                <td className="py-4 px-6">{product.price.toLocaleString()}</td>
+                <td className="py-4 px-6">{product.salePrice.toLocaleString()}</td>
                 <td className="py-4 px-6">{product.color}</td>
                 <td className="py-4 px-6">{product.description.slice(0, 20)}</td>
                 <td className="py-4 px-6">

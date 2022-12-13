@@ -1,6 +1,5 @@
 import React from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
-import { BsFillBarChartFill } from 'react-icons/bs';
 
 function Header() {
   return (
@@ -8,7 +7,11 @@ function Header() {
       <header class="py-4 shadow-sm bg-white">
         <div class="container flex items-center justify-between">
           <a href="index.html">
-            <img src="../assets/images/logo.svg" alt="Logo" class="w-32" />
+            <img
+              src="https://img.freepik.com/free-vector/furniture-logo_23-2148613625.jpg?w=740&t=st=1670919607~exp=1670920207~hmac=459481d738b51b045afba4cb953468c6d79c718cc7570becdba55551e5c43a37"
+              alt="Logo"
+              class="w-32"
+            />
           </a>
 
           <div class="w-full max-w-xl relative flex">
@@ -20,7 +23,7 @@ function Header() {
               name="search"
               id="search"
               class="w-full border border-primary border-r-0 pl-12 py-3 pr-3 rounded-l-md focus:outline-none"
-              placeholder="search"
+              placeholder="Search"
             />
             <button class="bg-primary border border-primary text-white px-8 rounded-r-md hover:bg-transparent hover:text-primary transition">
               Search
@@ -32,7 +35,6 @@ function Header() {
               <div class="text-2xl">
                 <i class="fa-regular fa-heart"></i>
               </div>
-              <div class="text-xs leading-3">Wishlist</div>
               <div class="absolute right-0 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
                 8
               </div>

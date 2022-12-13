@@ -1,3 +1,5 @@
+import { Image } from '../Image';
+
 function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
   return (
     <div className=" absolute top-0 left-0 z-50  w-full h-full bg-gray-400/50 overflow-y-auto	 ">
@@ -24,7 +26,6 @@ function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
           </button>
           <div className="px-6 py-6 lg:px-8">
             <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
-              {' '}
               {action === 'create' ? 'Create' : 'Edit'}
             </h3>
             <div className="space-y-6">
@@ -36,12 +37,12 @@ function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
                         onChange={(e) => input.setValue(e.target.value)}
                         defaultValue={action === 'edit' && input.defaultValue}
                       >
-                        {action === 'create' && <option value={null}>----Null----</option>}
+                        <option value={null}>{input.selectTitle}</option>
 
                         {input.value.map((value) => (
                           <option key={value.id} value={value.id}>
                             {input.from === 'manufacturer' && value.manufacturerName}
-                            {(input.from === 'categoryParent') | (input.from === 'categoryChildren') && value.type}
+                            {input.from === 'categoryParent' || input.from === 'categoryChildren' ? value.type : ''}
                           </option>
                         ))}
                       </select>
@@ -59,8 +60,11 @@ function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
                           onChange={(e) => input.setValue(input.type === 'file' ? e.target.files[0] : e.target.value)}
                           id={input.lable}
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                          required
+                          placeholder={input.placeHolder}
                         />
+                        {input.type === 'file' && input.preview && (
+                          <Image className={'h-1/3 w-1/3'} src={input.preview} alt="images" />
+                        )}
                       </div>
                     )}
                   </div>
