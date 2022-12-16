@@ -1,13 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Image } from '~/components/Image';
 import CustomAxios, { baseURL } from '~/config/api';
+import { Toast } from '~/components/Toast';
+import { useLocation } from 'react-router-dom';
+import { FilterContext } from '~/contexts/FilterContextProvider';
 
 function UserPage() {
-  const tokens = JSON.parse(localStorage.getItem('userInfo'));
+  const [stateFilter, dispatchFilter] = useContext(FilterContext);
+  // console.log(stateFilter);
+  const { state } = useLocation();
+  const [stateLocal, setStateLocal] = useState({
+    content: 'Welcome to Furniture Online Store!',
+    toastSignInTime: 5000,
+    type: 'success',
+  });
+
   const [allProduct, setAllProduct] = useState([]);
+
+  const handleSelectSorting = (e) => {
+    if (e.target.value === 'price-low-to-high') getPriceLowToHigh();
+    else if (e.target.value === 'price-high-to-low') getPriceHighToLow();
+    else if (e.target.value === 'latest') getLatestProducts();
+    else getAllProduct();
+  };
+
+  const [showToast, setShowToast] = useState(true);
   useEffect(() => {
     getAllProduct();
   }, []);
+
+  useEffect(() => {
+    getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
+  }, [stateFilter]);
+
+  useEffect(() => {
+    let idTime;
+    if (state) {
+      setStateLocal({ content: state.content, toastSignInTime: state.toastSignInTime, type: state.type });
+    }
+    idTime = setTimeout(() => {
+      setShowToast(false);
+    }, stateLocal.toastSignInTime);
+
+    return () => clearTimeout(idTime);
+  }, [state]);
   const getAllProduct = async () => {
     const product = await CustomAxios.get('/api/v1/products/', {
       params: {
@@ -17,14 +53,58 @@ function UserPage() {
     });
     setAllProduct(product.data.rows);
   };
+  //price low to high
+  const getPriceLowToHigh = async () => {
+    try {
+      const res = await CustomAxios.get('/api/v1/products/price-low-to-high');
+      setAllProduct(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //price high to low
+  const getPriceHighToLow = async () => {
+    try {
+      const res = await CustomAxios.get('/api/v1/products/price-high-to-low');
+      setAllProduct(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //latest products
+  const getLatestProducts = async () => {
+    try {
+      const res = await CustomAxios.get('/api/v1/products/latest');
+      setAllProduct(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //filter
+  const getProductsByFilter = async (categoryId, manufacturerId, color) => {
+    try {
+      const res = await CustomAxios.post('/api/v1/products/get-by-filter', {
+        categoryId,
+        manufacturerId,
+        color,
+      });
+      setAllProduct(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
-      <div class="col-span-3">
-        <div class="flex items-center mb-4">
+      {showToast && (
+        <Toast className={'fixed right-5 bottom-1 z-50'} type={stateLocal.type} content={stateLocal.content} />
+      )}
+      <div className="col-span-3">
+        <div className="flex items-center mb-4">
           <select
             name="sort"
             id="sort"
-            class="w-44 text-l text-gray-600 py-3 px-4 border-gray-300 shadow-sm rounded focus:ring-primary focus:border-primary"
+            className="w-44 text-l text-gray-600 py-3 px-4 border-gray-300 shadow-sm rounded focus:ring-primary focus:border-primary"
+            onChange={handleSelectSorting}
           >
             <option value="">Default sorting</option>
             <option value="price-low-to-high">Price low to high</option>
@@ -32,17 +112,17 @@ function UserPage() {
             <option value="latest">Latest product</option>
           </select>
 
-          <div class="flex gap-2 ml-auto">
-            <div class="border border-primary w-10 h-9 flex items-center justify-center text-white bg-primary rounded cursor-pointer">
-              <i class="fa-solid fa-grip-vertical"></i>
+          <div className="flex gap-2 ml-auto">
+            <div className="border border-primary w-10 h-9 flex items-center justify-center text-white bg-primary rounded cursor-pointer">
+              <i className="fa-solid fa-grip-vertical"></i>
             </div>
-            <div class="border border-gray-300 w-10 h-9 flex items-center justify-center text-gray-600 rounded cursor-pointer">
-              <i class="fa-solid fa-list"></i>
+            <div className="border border-gray-300 w-10 h-9 flex items-center justify-center text-gray-600 rounded cursor-pointer">
+              <i className="fa-solid fa-list"></i>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-6">
           {allProduct.map((product) => {
             let imageUrl;
             if (product.ImageProducts[0]) {
@@ -53,53 +133,53 @@ function UserPage() {
             return (
               <div
                 key={product.id}
-                class="bg-white shadow rounded overflow-hidden flex flex-col justify-between items-center"
+                className="bg-white shadow rounded overflow-hidden flex flex-col justify-between items-center"
               >
-                <div class="relative flex flex-col items-center">
-                  {/* <img src={imageUrl} alt="product 1" class="w-full" /> */}
+                <div className="relative flex flex-col items-center">
+                  {/* <img src={imageUrl} alt="product 1" className="w-full" /> */}
                   <Image src={imageUrl} alt="product but error" className={'w-5/6 h-60'} />
                   <div
-                    class="absolute inset-0 bg-black bg-opacity-40 flex items-center 
+                    className="absolute inset-0 bg-black bg-opacity-40 flex items-center 
                         justify-center gap-2 opacity-0 group-hover:opacity-100 transition"
                   >
                     <a
                       href="##"
-                      class="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
+                      className="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
                       title="view product"
                     >
-                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <i className="fa-solid fa-magnifying-glass"></i>
                     </a>
                     <a
                       href="##"
-                      class="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
+                      className="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
                       title="add to wishlist"
                     >
-                      <i class="fa-solid fa-heart"></i>
+                      <i className="fa-solid fa-heart"></i>
                     </a>
                   </div>
                 </div>
-                <div class="pt-4 pb-3 px-4">
+                <div className="pt-4 pb-3 px-4">
                   <a href="##">
-                    <h4 class="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition">
+                    <h4 className="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition">
                       {product.name}
                     </h4>
                   </a>
                   <div className="flex flex-col mb-1 ">
-                    <p class="text-base font-regular">{product.Category.type}</p>
+                    <p className="text-base font-regular">{product.Category.type}</p>
 
-                    <p class="text-base  font-regular">{product.Manufacturer.manufacturerName}</p>
+                    <p className="text-base  font-regular">{product.Manufacturer.manufacturerName}</p>
                   </div>
-                  <div class="flex items-baseline mb-1 space-x-2">
-                    <p class="text-xl text-primary font-semibold">{product.salePrice.toLocaleString() + ' VND'}</p>
-                    <p class="text-sm text-gray-400 line-through">{product.price.toLocaleString() + ' VND'}</p>
+                  <div className="flex items-baseline mb-1 space-x-2">
+                    <p className="text-xl text-primary font-semibold">{product.salePrice.toLocaleString() + ' VND'}</p>
+                    <p className="text-sm text-gray-400 line-through">{product.price.toLocaleString() + ' VND'}</p>
                   </div>
-                  <div class="flex items-center">
-                    <div class="flex gap-1 text-sm text-yellow-400"></div>
+                  <div className="flex items-center">
+                    <div className="flex gap-1 text-sm text-yellow-400"></div>
                   </div>
                 </div>
                 <a
                   href="##"
-                  class="block w-full py-1 text-center text-white bg-primary border border-primary rounded-b hover:bg-transparent hover:text-primary transition"
+                  className="  block w-full py-1 text-center text-white border border-primary rounded-b hover:bg-slate-600 bg-slate-500 hover:text-black transition"
                 >
                   Add to cart
                 </a>

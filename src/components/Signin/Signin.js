@@ -1,16 +1,35 @@
-import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signin.css';
 import CustomAxios from '../../config/api';
+import { Toast } from '../Toast';
 
 function Login(props) {
+  const { state } = useLocation();
+  const [stateLocal, setStateLocal] = useState({
+    content: 'Welcome to Furniture Online Store!',
+    toastSignInTime: 5000,
+    type: 'success',
+  });
   const navigate = useNavigate();
   const [passwordShown, setPasswordShown] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginStatus, setLoginStatus] = useState();
+  const [showToast, setShowToast] = useState(false);
+  useEffect(() => {
+    let idTime;
+    if (state) {
+      setStateLocal({ content: state.content, toastSignInTime: state.toastSignInTime, type: state.type });
+      setShowToast(true);
+    }
+    idTime = setTimeout(() => {
+      setShowToast(false);
+    }, stateLocal.toastSignInTime);
 
+    return () => clearTimeout(idTime);
+  }, [state]);
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   };
@@ -36,12 +55,17 @@ function Login(props) {
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
       // console.log(res.data.tokens);
-      navigate('/');
+      navigate('/', {
+        state: { toastSignInTime: 5000, content: 'Welcome to Furniture Online Store!', type: 'success' },
+      });
     }
   };
 
   return (
     <div className="bg">
+      {showToast && (
+        <Toast className={'fixed right-5 bottom-1 z-50'} type={stateLocal.type} content={stateLocal.content} />
+      )}
       <div className="login-page">
         <h4> WELCOME TO FURNITURE ONLINE STORE </h4>
         <form onSubmit={handleSubmit} className="form-login">
@@ -61,7 +85,7 @@ function Login(props) {
 
           <input type="submit" value="Login"></input>
 
-          <Link to="/forgot-password" style={{ textDecoration: 'underline red', fontSize: '17px' }}>
+          <Link to="/resetpassword" style={{ textDecoration: 'underline red', fontSize: '17px' }}>
             Forgot password?
           </Link>
           <Link to="/signup" style={{ textDecoration: 'none', fontSize: '19px' }}>

@@ -4,13 +4,17 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'normalize.css';
 import './index.css';
+import 'react-toastify/dist/ReactToastify.css';
 import AuthContextProvider from './contexts/AuthContextProvider';
+import FilterContextProvider from './contexts/FilterContextProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
-      <App />
+      <FilterContextProvider>
+        <App />
+      </FilterContextProvider>
     </AuthContextProvider>
   </React.StrictMode>,
 );

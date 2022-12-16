@@ -6,7 +6,7 @@ function UserLayout({ children }) {
   return (
     <div className="flex flex-col">
       <Header />
-      <div class="container grid grid-cols-4 gap-6 pt-4 pb-16 items-start">
+      <div className="container grid grid-cols-4 gap-6 pt-4 pb-16 items-start">
         <SideBar />
         {children}
       </div>
