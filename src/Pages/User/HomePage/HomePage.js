@@ -30,7 +30,9 @@ function UserPage() {
   }, []);
 
   useEffect(() => {
-    getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
+    if (stateFilter.categoryId !== 0) {
+      getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
+    }
   }, [stateFilter]);
 
   useEffect(() => {
