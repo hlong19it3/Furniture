@@ -7,16 +7,19 @@ import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthContextProvider from './contexts/AuthContextProvider';
 import FilterContextProvider from './contexts/FilterContextProvider';
+import CartContextProvider from './contexts/CartContextProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <AuthContextProvider>
-      <FilterContextProvider>
-        <App />
-      </FilterContextProvider>
-    </AuthContextProvider>
-  </React.StrictMode>,
+  <AuthContextProvider>
+    <FilterContextProvider>
+      <CartContextProvider>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </CartContextProvider>
+    </FilterContextProvider>
+  </AuthContextProvider>,
 );
 // eslint-disable-next-line
 // If you want to start measuring performance in your app, pass a function

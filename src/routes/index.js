@@ -7,6 +7,9 @@ import AdminPages from '~/Pages/Admin';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
 import { HomePage } from '~/Pages/User/HomePage';
+import { ProductDetail } from '~/Pages/User/ProductDetail';
+import { Cart } from '~/Pages/User/Cart';
+import { Checkout } from '~/Pages/User/Checkout';
 
 export const adminRoutes = [
   { path: configFile.routes.admin, component: DashBoard },
@@ -39,5 +42,17 @@ export const userRoutes = [
     path: configFile.routes.resetPassword,
     component: ResetPassword,
     layout: React.Fragment,
+  },
+  {
+    path: configFile.routes.product,
+    component: ProductDetail,
+  },
+  {
+    path: configFile.routes.cart,
+    component: Cart,
+  },
+  {
+    path: configFile.routes.checkout,
+    component: Checkout,
   },
 ];

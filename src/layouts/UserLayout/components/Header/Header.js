@@ -1,53 +1,55 @@
-import React from 'react';
+import React, { useContext } from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
+import { BsFillCartFill } from 'react-icons/bs';
+import { Link, useNavigate } from 'react-router-dom';
+import configFile from '~/config';
+import { AuthContext } from '~/contexts/AuthContextProvider';
+import useCartContext from '~/hooks/useCartContext';
 import { Search } from '../Search';
 
 function Header() {
   const nav = useNavigate();
+  const [token, currentUser, setToken, setCurrentUser] = useContext(AuthContext);
+  const [stateCart, dispatchCart] = useCartContext();
   const handleLogin = () => {
     nav('/signin');
   };
   const handleSignOut = () => {
     localStorage.removeItem('userInfo');
+    setCurrentUser('');
     nav('/');
   };
   const tokens = localStorage.getItem('userInfo');
 
   return (
-    <div className="z-50">
-      <header className="flex py-4 shadow-sm bg-white h-32 ">
+    <div className="z-50 top-0 sticky">
+      <header className="flex py-4 shadow-sm bg-white h-24 ">
         <div className="container flex items-center justify-between">
-          <a href="index.html">
+          <Link to={configFile.routes.home}>
             <img
               src="https://img.freepik.com/free-vector/furniture-logo_23-2148613625.jpg?w=740&t=st=1670919607~exp=1670920207~hmac=459481d738b51b045afba4cb953468c6d79c718cc7570becdba55551e5c43a37"
               alt="Logo"
               className="w-32"
             />
-          </a>
+          </Link>
 
           <div className="w-full max-w-xl relative flex">
             <Search />
           </div>
 
           <div className="flex items-center space-x-4">
-            <a href="##" className="text-center text-gray-700 hover:text-primary transition relative">
+            <Link
+              to={configFile.routes.cart}
+              className="text-center text-gray-700 hover:text-primary transition relative"
+            >
               <div className="text-2xl">
-                <i className="fa-regular fa-heart"></i>
+                <BsFillCartFill />
               </div>
-              <div className="absolute right-0 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
-                8
+
+              <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
+                {stateCart ? stateCart.length : 0}
               </div>
-            </a>
-            <a href="##" className="text-center text-gray-700 hover:text-primary transition relative">
-              <div className="text-2xl">
-                <i className="fa-solid fa-bag-shopping"></i>
-              </div>
-              <div className="text-xl leading-3">Cart</div>
-              <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-slate-500 text-white text-xs">
-                2
-              </div>
-            </a>
+            </Link>
             <a href="##" className="text-center text-gray-700 hover:text-primary transition relative">
               <div className="text-2xl">
                 <i className="fa-regular fa-user"></i>
@@ -57,7 +59,7 @@ function Header() {
           </div>
         </div>
       </header>
-      <nav className="bg-gray-800">
+      <nav className="bg-gray-800 ">
         <div className="container flex">
           <div className="px-8 py-4 bg-slate-500 flex items-center cursor-pointer relative group">
             <span className="text-white">

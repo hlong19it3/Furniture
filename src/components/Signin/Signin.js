@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signin.css';
 import CustomAxios from '../../config/api';
 import { Toast } from '../Toast';
+import { AuthContext } from '~/contexts/AuthContextProvider';
 
 function Login(props) {
+  const [token, currentUser, setToken, setCurrentUser] = useContext(AuthContext);
   const { state } = useLocation();
   const [stateLocal, setStateLocal] = useState({
     content: 'Welcome to Furniture Online Store!',
@@ -54,6 +56,7 @@ function Login(props) {
     }
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
+      setToken(JSON.stringify(res.data.tokens));
       // console.log(res.data.tokens);
       navigate('/', {
         state: { toastSignInTime: 5000, content: 'Welcome to Furniture Online Store!', type: 'success' },

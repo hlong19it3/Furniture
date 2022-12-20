@@ -1,7 +1,10 @@
 import HeadlessTippy from '@tippyjs/react/headless';
 import { useEffect, useState } from 'react';
-import { Image } from '~/components/Image';
+import { BiSearchAlt } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
 
+import { Image } from '~/components/Image';
 import CustomAxios, { baseURL } from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 function Search() {
@@ -54,10 +57,14 @@ function Search() {
               } else {
                 imageUrl = '';
               }
+
               return (
-                <div key={result.id}>
+                <Link
+                  key={result.id}
+                  to={`/product@${encodeURIComponent(CryptoJS.Rabbit.encrypt(`${result.id}`, 'hashUrlProductDetail'))}`}
+                >
                   <div className="flex h-full my-3 hover:bg-cyan-200/40 px-2 rounded overflow-hidden text-ellipsis">
-                    <Image src={imageUrl} alt={result.name} className="w-1/4" />
+                    <Image src={imageUrl} alt={result.name} className="w-1/4 rounded" />
                     <div className="flex flex-col flex-1 mx-2">
                       <div className="text-2xl text-orange-400 font-bold">{result.name}</div>
                       <div>{result.Category.type}</div>
@@ -65,7 +72,7 @@ function Search() {
                       <div className="font-semibold">{result.salePrice.toLocaleString()} VND</div>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
         </div>
@@ -73,8 +80,8 @@ function Search() {
       onClickOutside={() => setShowResult(false)}
     >
       <div className=" relative flex w-full">
-        <span className="absolute left-4 top-3 text-lg text-gray-400">
-          <i className="fa-solid fa-magnifying-glass"></i>
+        <span className="absolute left-4 top-1/2 text-2xl text-zinc-900/80 -translate-y-1/2">
+          <BiSearchAlt />
         </span>
         <input
           value={searchValue}

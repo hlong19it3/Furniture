@@ -7,6 +7,9 @@ module.exports = {
       width: {
         header: '600px',
       },
+      height: {
+        cart: 'calc(100vh - 182.39px)',
+      },
     },
   },
   plugins: [require('flowbite/plugin')],

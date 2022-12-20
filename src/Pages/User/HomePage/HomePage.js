@@ -1,12 +1,19 @@
 import { useContext, useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import CryptoJS from 'crypto-js';
+
 import { Image } from '~/components/Image';
-import CustomAxios, { baseURL } from '~/config/api';
 import { Toast } from '~/components/Toast';
-import { useLocation } from 'react-router-dom';
+import CustomAxios, { baseURL } from '~/config/api';
 import { FilterContext } from '~/contexts/FilterContextProvider';
+import useCartContext from '~/hooks/useCartContext';
+import { toast, ToastContainer } from 'react-toastify';
+import { addToCart } from '~/reducers/cartReducer';
 
 function UserPage() {
   const [stateFilter, dispatchFilter] = useContext(FilterContext);
+  const [stateCart, dispatchCart] = useCartContext();
+
   // console.log(stateFilter);
   const { state } = useLocation();
   const [stateLocal, setStateLocal] = useState({
@@ -95,6 +102,31 @@ function UserPage() {
       console.log(error);
     }
   };
+
+  const handleAddtoCart = (product, imageUrl) => {
+    dispatchCart(
+      addToCart({
+        productId: product.id,
+        nameProduct: product.name,
+        currentPrice: product.salePrice,
+        imageUrl: imageUrl,
+        quantity: 1,
+      }),
+    );
+    toast.success('Add to cart successfully!', {
+      position: 'bottom-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+      style: {
+        fontSize: '16px',
+      },
+    });
+  };
   return (
     <>
       {showToast && (
@@ -133,63 +165,50 @@ function UserPage() {
               imageUrl = '';
             }
             return (
-              <div
-                key={product.id}
-                className="bg-white shadow rounded overflow-hidden flex flex-col justify-between items-center"
-              >
-                <div className="relative flex flex-col items-center">
-                  {/* <img src={imageUrl} alt="product 1" className="w-full" /> */}
-                  <Image src={imageUrl} alt="product but error" className={'w-5/6 h-60'} />
-                  <div
-                    className="absolute inset-0 bg-black bg-opacity-40 flex items-center 
-                        justify-center gap-2 opacity-0 group-hover:opacity-100 transition"
-                  >
-                    <a
-                      href="##"
-                      className="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
-                      title="view product"
-                    >
-                      <i className="fa-solid fa-magnifying-glass"></i>
-                    </a>
-                    <a
-                      href="##"
-                      className="text-white text-lg w-9 h-8 rounded-full bg-primary flex items-center justify-center hover:bg-gray-800 transition"
-                      title="add to wishlist"
-                    >
-                      <i className="fa-solid fa-heart"></i>
-                    </a>
+              <div key={product.id}>
+                <Link
+                  className="bg-white shadow rounded overflow-hidden flex flex-col justify-between items-center"
+                  to={`/product@${encodeURIComponent(
+                    CryptoJS.Rabbit.encrypt(`${product.id}`, 'hashUrlProductDetail'),
+                  )}`}
+                >
+                  <div className="relative flex flex-col items-center">
+                    <Image src={imageUrl} alt="product but error" className={'w-5/6 h-60'} />
                   </div>
-                </div>
-                <div className="pt-4 pb-3 px-4">
-                  <a href="##">
-                    <h4 className="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition">
-                      {product.name}
-                    </h4>
-                  </a>
-                  <div className="flex flex-col mb-1 ">
-                    <p className="text-base font-regular">{product.Category.type}</p>
+                  <div className="pt-4 pb-3 px-4">
+                    <div>
+                      <h4 className="uppercase font-medium text-xl mb-2 text-gray-800 hover:text-primary transition text-ellipsis whitespace-nowrap overflow-hidden">
+                        {product.name}
+                      </h4>
+                    </div>
+                    <div className="flex flex-col mb-1 ">
+                      <p className="text-base font-regular">{product.Category.type}</p>
 
-                    <p className="text-base  font-regular">{product.Manufacturer.manufacturerName}</p>
+                      <p className="text-base  font-regular">{product.Manufacturer.manufacturerName}</p>
+                    </div>
+                    <div className="flex items-baseline mb-1 space-x-2">
+                      <p className="text-xl text-primary font-semibold">
+                        {product.salePrice.toLocaleString() + ' VND'}
+                      </p>
+                      <p className="text-sm text-gray-400 line-through">{product.price.toLocaleString() + ' VND'}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex gap-1 text-sm text-yellow-400"></div>
+                    </div>
                   </div>
-                  <div className="flex items-baseline mb-1 space-x-2">
-                    <p className="text-xl text-primary font-semibold">{product.salePrice.toLocaleString() + ' VND'}</p>
-                    <p className="text-sm text-gray-400 line-through">{product.price.toLocaleString() + ' VND'}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="flex gap-1 text-sm text-yellow-400"></div>
-                  </div>
-                </div>
-                <a
-                  href="##"
+                </Link>
+                <button
                   className="  block w-full py-1 text-center text-white border border-primary rounded-b hover:bg-slate-600 bg-slate-500 hover:text-black transition"
+                  onClick={() => handleAddtoCart(product, imageUrl)}
                 >
                   Add to cart
-                </a>
+                </button>
               </div>
             );
           })}
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }
