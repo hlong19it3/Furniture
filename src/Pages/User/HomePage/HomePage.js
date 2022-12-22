@@ -132,7 +132,7 @@ function UserPage() {
       {showToast && (
         <Toast className={'fixed right-5 bottom-1 z-50'} type={stateLocal.type} content={stateLocal.content} />
       )}
-      <div className="col-span-3">
+      <div className="col-span-3 overflow-y-auto">
         <div className="flex items-center mb-4">
           <select
             name="sort"
