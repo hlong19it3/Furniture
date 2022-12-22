@@ -14,7 +14,7 @@ function UserPage() {
   const [stateFilter, dispatchFilter] = useContext(FilterContext);
   const [stateCart, dispatchCart] = useCartContext();
 
-  // console.log(stateFilter);
+  console.log(stateFilter);
   const { state } = useLocation();
   const [stateLocal, setStateLocal] = useState({
     content: 'Welcome to Furniture Online Store!',
@@ -37,9 +37,9 @@ function UserPage() {
   }, []);
 
   useEffect(() => {
-    if (stateFilter.categoryId !== 0) {
-      getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
-    }
+    // if (stateFilter.categoryId !== 0) {
+    getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
+    // }
   }, [stateFilter]);
 
   useEffect(() => {
@@ -97,6 +97,7 @@ function UserPage() {
         manufacturerId,
         color,
       });
+      console.log(res.data);
       setAllProduct(res.data);
     } catch (error) {
       console.log(error);
@@ -132,7 +133,7 @@ function UserPage() {
       {showToast && (
         <Toast className={'fixed right-5 bottom-1 z-50'} type={stateLocal.type} content={stateLocal.content} />
       )}
-      <div className="col-span-3 overflow-y-auto">
+      <div className="col-span-3 ">
         <div className="flex items-center mb-4">
           <select
             name="sort"
@@ -145,18 +146,9 @@ function UserPage() {
             <option value="price-high-to-low">Price high to low</option>
             <option value="latest">Latest product</option>
           </select>
-
-          <div className="flex gap-2 ml-auto">
-            <div className="border border-primary w-10 h-9 flex items-center justify-center text-white bg-primary rounded cursor-pointer">
-              <i className="fa-solid fa-grip-vertical"></i>
-            </div>
-            <div className="border border-gray-300 w-10 h-9 flex items-center justify-center text-gray-600 rounded cursor-pointer">
-              <i className="fa-solid fa-list"></i>
-            </div>
-          </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-6 h-[60rem] overflow-y-auto">
           {allProduct.map((product) => {
             let imageUrl;
             if (product.ImageProducts[0]) {

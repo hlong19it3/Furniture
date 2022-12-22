@@ -55,7 +55,7 @@ function SideBar() {
     setManufacturers();
   };
   return (
-    <div className="col-span-1 bg-white px-4 pb-6 shadow rounded overflow-hidden">
+    <div className="col-span-1 bg-white px-4 pb-6 shadow rounded ">
       <div className="divide-y divide-gray-200 space-y-5">
         <Wrapper title={'CATEGORIES'}>
           <div className="space-y-2">
@@ -86,7 +86,7 @@ function SideBar() {
                       showSubCategory={showSubCategory === category.id}
                       setShowSubCategory={setShowSubCategory}
                     />
-                    <div className="ml-auto text-gray-600 text-sm">(15)</div>
+                    {/* <div className="ml-auto text-gray-600 text-sm">(15)</div> */}
                   </div>
                 )
               );
@@ -115,7 +115,7 @@ function SideBar() {
           </div>
         </Wrapper>
 
-        <Wrapper className="pt-4" title={'Price'}>
+        {/* <Wrapper className="pt-4" title={'Price'}>
           <div className="mt-4 flex items-center">
             <input
               type="text"
@@ -133,7 +133,7 @@ function SideBar() {
               placeholder="max"
             />
           </div>
-        </Wrapper>
+        </Wrapper> */}
 
         <Wrapper className="pt-4" title={'Color'}>
           <div className="flex items-center gap-2">

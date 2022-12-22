@@ -6,8 +6,9 @@ import { SideBar } from './components/SideBar';
 function UserLayout({ children }) {
   const pathName = window.location.pathname;
   const [showSideBar, setShowSideBar] = useState();
+  console.log(pathName);
   useEffect(() => {
-    if (pathName.startsWith('/product@') || pathName.startsWith('/cart') || pathName.startsWith('/checkout-success')) {
+    if (pathName !== '/') {
       setShowSideBar(false);
     } else {
       setShowSideBar(true);

@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
 import { BsFillCartFill } from 'react-icons/bs';
+import { RiProfileLine, RiLockPasswordLine } from 'react-icons/ri';
 import { FaUserAlt } from 'react-icons/fa';
-import { CiViewList } from 'react-icons/ci';
+import { HiOutlineClipboardList } from 'react-icons/hi';
 import { Link, useNavigate } from 'react-router-dom';
 import HeadlessTippy from '@tippyjs/react/headless';
 
@@ -11,10 +12,29 @@ import { AuthContext } from '~/contexts/AuthContextProvider';
 import useCartContext from '~/hooks/useCartContext';
 import { Search } from '../Search';
 
+const MENU = [
+  {
+    icon: RiProfileLine,
+    href: configFile.routes.profile,
+    title: 'My Profile',
+  },
+  {
+    icon: HiOutlineClipboardList,
+    href: configFile.routes.orderHistory,
+    title: 'My Orders',
+  },
+  {
+    icon: RiLockPasswordLine,
+    href: configFile.routes.changePassword,
+    title: 'Change Password',
+  },
+];
 function Header() {
   const nav = useNavigate();
   const [token, currentUser, setToken, setCurrentUser] = useContext(AuthContext);
   const [stateCart, dispatchCart] = useCartContext();
+
+  const [showTippy, setShowTippy] = useState(false);
   const handleLogin = () => {
     nav('/signin');
   };
@@ -24,7 +44,9 @@ function Header() {
     nav('/');
   };
   const tokens = localStorage.getItem('userInfo');
-
+  const showOnClick = () => {
+    setShowTippy(!showTippy);
+  };
   return (
     <div className="z-50 top-0 sticky">
       <header className="flex py-4 shadow-sm bg-white h-24 ">
@@ -44,48 +66,42 @@ function Header() {
           <div className="flex items-center space-x-4">
             <Link
               to={configFile.routes.cart}
-              className="text-center text-gray-700 hover:text-primary transition relative"
+              className="text-center text-gray-700 hover:text-primary transition relative mr-4"
             >
-              <div className="text-2xl">
-                <BsFillCartFill />
-              </div>
+              <BsFillCartFill className="w-7 h-7" />
 
               <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
                 {stateCart ? stateCart.length : 0}
               </div>
             </Link>
             <HeadlessTippy
-              visible
               interactive
+              visible={showTippy}
+              onClickOutside={() => setShowTippy(false)}
               render={(attrs) => (
-                <div className="flex flex-col w-90 m-h-content rounded-lg shadow " tabIndex="-1" {...attrs}>
-                  <Link to={configFile.routes.profile} className="flex w-full py-2 px-3 text-lg hover:bg-slate-700">
-                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
-                    <div className="hover:text-white">My Profile</div>
-                  </Link>
-                  <Link
-                    to={configFile.routes.orderHistory}
-                    className="flex w-full py-2 px-3 text-lg hover:bg-slate-700"
-                  >
-                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
-                    <div className="hover:text-white">My Orders</div>
-                  </Link>
-                  <Link
-                    to={configFile.routes.changePassword}
-                    className="flex w-full py-2 px-3 text-lg hover:bg-slate-700"
-                  >
-                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
-                    <div className="hover:text-white">Change My Password</div>
-                  </Link>
+                <div
+                  className="flex flex-col w-64  rounded-lg border border-slate-700 p-2 bg-white"
+                  tabIndex="-1"
+                  {...attrs}
+                >
+                  {MENU.map((menu, index) => (
+                    <Link
+                      key={index}
+                      to={menu.href}
+                      className="flex justify-start items-center w-full py-2 px-3 text-lg hover:bg-slate-500 hover:text-white"
+                    >
+                      <menu.icon className="font-bold text-3xl flex-[0.3]" />
+                      <div className="text-lg font-semibold flex-[0.7]">{menu.title}</div>
+                    </Link>
+                  ))}
                 </div>
               )}
             >
-              <div className="text-center text-gray-700 hover:text-primary transition relative">
-                <div className="text-2xl">
-                  <FaUserAlt />
-                </div>
+              <div className=" flex items-center text-gray-700 hover:text-blue-700 transition relative">
+                <button className="border-none outline-none" onClick={showOnClick}>
+                  <FaUserAlt className="w-7 h-7" />
+                </button>
               </div>
-              {/* <div className="text-xl leading-3">Account</div> */}
             </HeadlessTippy>
           </div>
         </div>

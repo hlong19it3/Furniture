@@ -1,10 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AiFillEyeInvisible, AiFillEye } from 'react-icons/ai';
+
 import './Signin.css';
 import CustomAxios from '../../config/api';
 import { Toast } from '../Toast';
 import { AuthContext } from '~/contexts/AuthContextProvider';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Login(props) {
   const [token, currentUser, setToken, setCurrentUser] = useContext(AuthContext);
@@ -15,34 +18,26 @@ function Login(props) {
     type: 'success',
   });
   const navigate = useNavigate();
-  const [passwordShown, setPasswordShown] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginStatus, setLoginStatus] = useState();
-  const [showToast, setShowToast] = useState(false);
-  useEffect(() => {
-    let idTime;
-    if (state) {
-      setStateLocal({ content: state.content, toastSignInTime: state.toastSignInTime, type: state.type });
-      setShowToast(true);
-    }
-    idTime = setTimeout(() => {
-      setShowToast(false);
-    }, stateLocal.toastSignInTime);
+  const [typeInput, setTypeInput] = useState('password');
 
-    return () => clearTimeout(idTime);
-  }, [state]);
+  const [showHidePassword, setShowHidePassword] = useState(false);
+  const [showEye, setShowEye] = useState(false);
+
+  useEffect(() => {
+    if (showHidePassword === true) {
+      setTypeInput('text');
+    } else {
+      setTypeInput('password');
+    }
+  }, [showHidePassword]);
+
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   };
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
-  };
-
-  const togglePassword = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setPasswordShown(!passwordShown);
   };
 
   const handleSubmit = async (e) => {
@@ -52,7 +47,19 @@ function Login(props) {
       password,
     });
     if (res.status === 201) {
-      setLoginStatus(res.data.msg);
+      toast.error(res.data.msg, {
+        position: 'bottom-right',
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: true,
+        pauseOnHover: true,
+        hideProgressBar: false,
+        progress: undefined,
+        style: {
+          fontSize: '16px',
+        },
+        theme: 'colored',
+      });
     }
     if (res.status === 200) {
       localStorage.setItem('userInfo', JSON.stringify(res.data.tokens));
@@ -65,39 +72,57 @@ function Login(props) {
   };
 
   return (
-    <div className="bg">
-      {showToast && (
-        <Toast className={'fixed right-5 bottom-1 z-50'} type={stateLocal.type} content={stateLocal.content} />
-      )}
-      <div className="login-page">
-        <h4> WELCOME TO FURNITURE ONLINE STORE </h4>
-        <form onSubmit={handleSubmit} className="form-login">
-          <input value={email} placeholder="Email" required onChange={handleChangeEmail}></input>
-          <input
-            value={password}
-            placeholder="Password"
-            type={passwordShown ? 'text' : 'password'}
-            // type="password"
-            required
-            onChange={handleChangePassword}
-          ></input>
-
-          <i className="fa-solid fa-eye showPassIcon" onClick={togglePassword} />
-          <br></br>
-          <p>{loginStatus}</p>
-
-          <input type="submit" value="Login"></input>
-
-          <Link to="/resetpassword" style={{ textDecoration: 'underline red', fontSize: '17px' }}>
+    <div className="w-screen h-screen bg flex">
+      <ToastContainer />
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <h4 className="text-slate-700"> WELCOME TO FURNITURE ONLINE STORE </h4>
+        <input
+          className=" border-none outline-none bg-slate-100 text-base w-96  mt-4 rounded-md p-2 "
+          placeholder="Email"
+          value={email}
+          onChange={handleChangeEmail}
+        />
+        <div className="flex flex-col mt-2 w-96 ">
+          <div className=" flex relative">
+            <input
+              className="px-2 py-2 border-none outline-none bg-slate-100 w-full text-base rounded-md"
+              placeholder="Password"
+              value={password}
+              type={typeInput}
+              onChange={handleChangePassword}
+              onFocus={() => setShowEye(true)}
+              onBlur={() => (password ? setShowEye(true) : setShowEye(false))}
+            />
+            {showEye && (
+              <span
+                className="cursor-pointer absolute right-2 top-1/2 -translate-y-1/2"
+                onClick={() => setShowHidePassword(!showHidePassword)}
+              >
+                {!showHidePassword ? <AiFillEyeInvisible color="rgb(55 65 81)" /> : <AiFillEye color="rgb(55 65 81)" />}
+              </span>
+            )}
+          </div>
+          <Link to="/resetpassword" className="text-sm  flex flex-1 justify-end">
             Forgot password?
           </Link>
-          <Link to="/signup" style={{ textDecoration: 'none', fontSize: '19px' }}>
-            Or Create new account!
-          </Link>
-          <Link to="/" style={{ textDecoration: 'none', fontSize: '19px' }}>
-            Shop now!
-          </Link>
-        </form>
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="bg-slate-500 border border-slate-800 w-40 mt-3 text-xl p-1 text-fuchsia-50 hover:text-white hover:bg-slate-800 rounded-md"
+        >
+          SIGN IN
+        </button>
+        <div className="text-base">Or</div>
+        <Link
+          to="/signup"
+          className="bg-slate-500 border border-slate-800 w-40 h-9 text-xl p-1 text-fuchsia-50 hover:text-white hover:bg-slate-800 rounded-md text-center"
+        >
+          SIGN UP
+        </Link>
+        <Link to="/" className="text-base font-semibold text-green-800 mt-3">
+          SHOP NOW
+        </Link>
       </div>
     </div>
   );
