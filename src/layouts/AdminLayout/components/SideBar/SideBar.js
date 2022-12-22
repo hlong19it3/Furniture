@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SideBarItem } from '~/components/Admin/SideBarItem';
 
 function SideBar() {
+  const nav = useNavigate()
   const signOut = () => {
-    localStorage.clear();
-    window.location.href = 'admin/signin';
+    nav('/admin/signin')
+    localStorage.removeItem('userInfo');
+    // window.location.href = '/signin';
   };
   const menuItems = [
     {
@@ -97,7 +99,8 @@ function SideBar() {
     },
     {
       content: 'Sign out',
-      url: '/admin/signout',
+      
+      onClick: () => signOut(),
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +127,7 @@ function SideBar() {
         </Link>
         <div className="space-y-5">
           {menuItems.map((menu, index) => (
-            <SideBarItem key={index} content={menu.content} url={menu.url} Icon={menu.icon} />
+            <SideBarItem key={index} content={menu.content} url={menu.url} Icon={menu.icon} onClick={menu.onClick}/>
           ))}
         </div>
       </div>

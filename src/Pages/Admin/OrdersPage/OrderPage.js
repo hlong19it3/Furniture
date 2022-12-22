@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ModalDetail } from '~/components/ModalDetail';
+
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -7,6 +9,9 @@ const limit = 5;
 function ProductPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
+  const [toggleModal, setToggleModal] = useState(false);
+
+  const [detailOrder, setDetailOrder] = useState();
 
   const [orders, setOrder] = useState([]);
   const [searchValue, setSearchValue] = useState('');
@@ -96,7 +101,24 @@ function ProductPage() {
       }
     }
   };
+  const handleShowDetail = async (orderId) => {
+    try {
+      const res = await CustomAxios.get(`/api/v1/orders/order-detail/${orderId}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+      });
 
+      console.log(res.data);
+      setDetailOrder(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setToggleModal(true);
+  };
+  const handleToggleModal = () => {
+    setToggleModal(false);
+    setDetailOrder();
+    getOrders();
+  };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
       <div className=" w-full relative shadow-md sm:rounded-lg ">
@@ -128,11 +150,12 @@ function ProductPage() {
                 Status
               </th>
               <th scope="col" className="py-3 px-6">
-                Time
+                Cancel
               </th>
               <th scope="col" className="py-3 px-6">
-                Email
+                Time
               </th>
+
               <th scope="col" className="py-3 px-6">
                 Phone
               </th>
@@ -150,10 +173,17 @@ function ProductPage() {
                 <td className="py-4 px-6">{order.User.firstName}</td>
                 <td className="py-4 px-6">{order.shippingAddress}</td>
                 <td className="py-4 px-6">{order.status}</td>
+                <td className="py-4 px-6">{order.cancelOrder === true ? 'Cancel' : 'No'}</td>
                 <td className="py-4 px-6">{order.createdAt.slice(0, 10)}</td>
-                <td className="py-4 px-6">{order.User.email}</td>
+
                 <td className="py-4 px-6">{order.User.phone}</td>
                 <td className="py-4 px-6">
+                  <button
+                    onClick={() => handleShowDetail(order.id)}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >
+                    Detail
+                  </button>{' '}
                   <button
                     onClick={() => deleteOrder(order.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
@@ -235,6 +265,7 @@ function ProductPage() {
           </ul>
         </nav>
       </div>
+      {toggleModal && <ModalDetail toggleModal={handleToggleModal} detail={detailOrder} />}
     </div>
   );
 }

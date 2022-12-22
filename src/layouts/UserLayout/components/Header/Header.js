@@ -27,7 +27,7 @@ function Header() {
         <div className="container flex items-center justify-between">
           <Link to={configFile.routes.home}>
             <img
-              src="https://img.freepik.com/free-vector/furniture-logo_23-2148613625.jpg?w=740&t=st=1670919607~exp=1670920207~hmac=459481d738b51b045afba4cb953468c6d79c718cc7570becdba55551e5c43a37"
+              src="https://marketplace.canva.com/EAFN9EmLAUY/1/0/1600w/canva-black-minimalist-furniture-logo-IBXwe4b5u8M.jpg"
               alt="Logo"
               className="w-32"
             />

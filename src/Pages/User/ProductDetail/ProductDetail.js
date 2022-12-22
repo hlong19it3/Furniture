@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Image } from '~/components/Image';
 import CustomAxios, { baseURL } from '~/config/api';
+import { addToCart } from '~/reducers/cartReducer';
+import { Toast } from '~/components/Toast';
+import { toast, ToastContainer } from 'react-toastify';
+import useCartContext from '~/hooks/useCartContext';
 function ProductDetail() {
   const { product } = useParams();
   const getHash = CryptoJS.Rabbit.decrypt(product, 'hashUrlProductDetail');
@@ -15,6 +19,7 @@ function ProductDetail() {
   const [productInfo, setProductInfo] = useState();
   const [comments, setComments] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [stateCart, dispatchCart] = useCartContext();
 
   useEffect(() => {
     getProductById();
@@ -52,7 +57,32 @@ function ProductDetail() {
       console.log(error);
     }
   };
-  console.log(productInfo, comments);
+  const handleAddtoCart = (product, imageUrl, related) => {
+    console.log(product);
+    console.log(imageUrl);
+    dispatchCart(
+      addToCart({
+        productId: product.id,
+        nameProduct: product.name,
+        currentPrice: product.salePrice,
+        imageUrl: imageUrl,
+        quantity: related ? 1 : quantity,
+      }),
+    );
+    toast.success('Add to cart successfully!', {
+      position: 'bottom-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+      style: {
+        fontSize: '16px',
+      },
+    });
+  };
   return (
     productInfo && (
       <>
@@ -124,12 +154,12 @@ function ProductDetail() {
             </div>
 
             <div class="mt-6 flex gap-3 pb-5 pt-5">
-              <a
-                href="##"
+              <button
                 class=" text-white px-8 py-2 font-medium rounded uppercase flex items-center gap-2  hover:bg-slate-600 bg-slate-500 hover:text-black transition"
+                onClick={() => handleAddtoCart(productInfo, baseURL + '/' + productInfo.ImageProducts[0].url)}
               >
                 <i class="fa-solid fa-bag-shopping"></i> Add to cart
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -174,12 +204,14 @@ function ProductDetail() {
                         <p class="text-sm text-gray-400 line-through">{relatedProduct.price.toLocaleString()} VND</p>
                       </div>
                     </div>
-                    <a
-                      href="##"
+                    <button
+                      onClick={() =>
+                        handleAddtoCart(relatedProduct, baseURL + '/' + relatedProduct.ImageProducts[0].url, 'related')
+                      }
                       class="block w-full py-1 text-center text-white border border-primary rounded-b hover:bg-slate-600 bg-slate-500 hover:text-black transition"
                     >
                       Add to cart
-                    </a>
+                    </button>
                   </div>
                 ),
             )}

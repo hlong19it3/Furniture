@@ -4,7 +4,7 @@ function Footer() {
       <div className="container grid grid-cols-3">
         <div className="col-span-1 space-y-8 mr-2">
           <img
-            src="https://img.freepik.com/free-vector/furniture-logo_23-2148613625.jpg?w=740&t=st=1670919607~exp=1670920207~hmac=459481d738b51b045afba4cb953468c6d79c718cc7570becdba55551e5c43a37"
+            src="https://marketplace.canva.com/EAFN9EmLAUY/1/0/1600w/canva-black-minimalist-furniture-logo-IBXwe4b5u8M.jpg"
             alt="logo"
             className="w-20 h-20 "
           />

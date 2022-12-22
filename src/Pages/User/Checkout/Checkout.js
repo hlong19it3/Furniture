@@ -29,7 +29,7 @@ function Checkout() {
           </h5>
         </div>
         <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">
-          Thanks for trusting us! {currentUser && currentUser.firstName + ' ' + currentUser.lastName}.
+          Thank you for your trust and support! {currentUser && currentUser.firstName + ' ' + currentUser.lastName}.
         </p>
         <Link
           to={configFile.routes.home}
