@@ -1,7 +1,11 @@
 import React, { useContext } from 'react';
 // import { BiChat, BiSearch, BiUserCircle } from 'react-icons/bi';
 import { BsFillCartFill } from 'react-icons/bs';
+import { FaUserAlt } from 'react-icons/fa';
+import { CiViewList } from 'react-icons/ci';
 import { Link, useNavigate } from 'react-router-dom';
+import HeadlessTippy from '@tippyjs/react/headless';
+
 import configFile from '~/config';
 import { AuthContext } from '~/contexts/AuthContextProvider';
 import useCartContext from '~/hooks/useCartContext';
@@ -50,12 +54,39 @@ function Header() {
                 {stateCart ? stateCart.length : 0}
               </div>
             </Link>
-            <a href="##" className="text-center text-gray-700 hover:text-primary transition relative">
-              <div className="text-2xl">
-                <i className="fa-regular fa-user"></i>
+            <HeadlessTippy
+              visible
+              interactive
+              render={(attrs) => (
+                <div className="flex flex-col w-90 m-h-content rounded-lg shadow " tabIndex="-1" {...attrs}>
+                  <Link to={configFile.routes.profile} className="flex w-full py-2 px-3 text-lg hover:bg-slate-700">
+                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
+                    <div className="hover:text-white">My Profile</div>
+                  </Link>
+                  <Link
+                    to={configFile.routes.orderHistory}
+                    className="flex w-full py-2 px-3 text-lg hover:bg-slate-700"
+                  >
+                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
+                    <div className="hover:text-white">My Orders</div>
+                  </Link>
+                  <Link
+                    to={configFile.routes.changePassword}
+                    className="flex w-full py-2 px-3 text-lg hover:bg-slate-700"
+                  >
+                    <CiViewList className="font-bold text-slate-700 hover:text-white" />
+                    <div className="hover:text-white">Change My Password</div>
+                  </Link>
+                </div>
+              )}
+            >
+              <div className="text-center text-gray-700 hover:text-primary transition relative">
+                <div className="text-2xl">
+                  <FaUserAlt />
+                </div>
               </div>
-              <div className="text-xl leading-3">Account</div>
-            </a>
+              {/* <div className="text-xl leading-3">Account</div> */}
+            </HeadlessTippy>
           </div>
         </div>
       </header>

@@ -10,6 +10,9 @@ import { HomePage } from '~/Pages/User/HomePage';
 import { ProductDetail } from '~/Pages/User/ProductDetail';
 import { Cart } from '~/Pages/User/Cart';
 import { Checkout } from '~/Pages/User/Checkout';
+import Profile from '~/Pages/User/UserPage/Profile';
+import Orders from '~/Pages/User/UserPage/Orders';
+import ChangePassword from '~/Pages/User/UserPage/ChangePassword';
 
 export const adminRoutes = [
   { path: configFile.routes.admin, component: DashBoard },
@@ -54,5 +57,17 @@ export const userRoutes = [
   {
     path: configFile.routes.checkout,
     component: Checkout,
+  },
+  {
+    path: configFile.routes.profile,
+    component: Profile,
+  },
+  {
+    path: configFile.routes.orderHistory,
+    component: Orders,
+  },
+  {
+    path: configFile.routes.changePassword,
+    component: ChangePassword,
   },
 ];
