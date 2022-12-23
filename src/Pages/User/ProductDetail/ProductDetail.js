@@ -1,12 +1,11 @@
 import CryptoJS from 'crypto-js';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import { Image } from '~/components/Image';
 import CustomAxios, { baseURL } from '~/config/api';
-import { addToCart } from '~/reducers/cartReducer';
-import { Toast } from '~/components/Toast';
-import { toast, ToastContainer } from 'react-toastify';
 import useCartContext from '~/hooks/useCartContext';
+import { addToCart } from '~/reducers/cartReducer';
 function ProductDetail() {
   const { product } = useParams();
   const getHash = CryptoJS.Rabbit.decrypt(product, 'hashUrlProductDetail');
@@ -19,14 +18,17 @@ function ProductDetail() {
   const [productInfo, setProductInfo] = useState();
   const [comments, setComments] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  // eslint-disable-next-line
   const [stateCart, dispatchCart] = useCartContext();
 
   useEffect(() => {
     getProductById();
     getCommentByProductId();
+    // eslint-disable-next-line
   }, []);
   useEffect(() => {
     relatedProduct();
+    // eslint-disable-next-line
   }, [productInfo]);
   const getProductById = async () => {
     try {
@@ -58,8 +60,6 @@ function ProductDetail() {
     }
   };
   const handleAddtoCart = (product, imageUrl, related) => {
-    console.log(product);
-    console.log(imageUrl);
     dispatchCart(
       addToCart({
         productId: product.id,
@@ -86,6 +86,7 @@ function ProductDetail() {
   return (
     productInfo && (
       <>
+        <ToastContainer />
         <div class="mt-12 container grid grid-cols-2 gap-6">
           <div>
             <Image

@@ -27,7 +27,7 @@ const cartReducer = (state, action) => {
       let itemInCart = newCart.find((item) => action.payload.productId === item.productId);
 
       if (itemInCart) {
-        itemInCart.quantity++;
+        itemInCart.quantity = itemInCart.quantity + action.payload.quantity;
       } else {
         itemInCart = {
           ...action.payload,

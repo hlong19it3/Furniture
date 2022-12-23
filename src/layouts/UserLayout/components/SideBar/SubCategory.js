@@ -1,4 +1,4 @@
-function SubCategory({ title, showSubCategory, setShowSubCategory, contents }) {
+function SubCategory({ title, showSubCategory, setShowSubCategory, contents, onClick, checked }) {
   return (
     showSubCategory && (
       <div
@@ -23,8 +23,19 @@ function SubCategory({ title, showSubCategory, setShowSubCategory, contents }) {
                 text-white
                 cursor-pointer
               "
+              onClick={() => onClick(content.id)}
             >
-              {content.type}
+              <input
+                checked={checked === content.id ? true : false}
+                readOnly
+                type="radio"
+                name="cat-1"
+                id={`cat-${content.id}`}
+                className="text-primary focus:ring-0 rounded-sm cursor-pointer"
+              />
+              <label className="cursor-pointer" htmlFor={`cat-${content.id}`}>
+                {content.type}
+              </label>
             </div>
           ))}
         </div>

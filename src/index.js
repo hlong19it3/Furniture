@@ -4,6 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'normalize.css';
 import './index.css';
+import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthContextProvider from './contexts/AuthContextProvider';
 import FilterContextProvider from './contexts/FilterContextProvider';

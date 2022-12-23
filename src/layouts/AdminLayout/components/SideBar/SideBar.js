@@ -2,9 +2,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SideBarItem } from '~/components/Admin/SideBarItem';
 
 function SideBar() {
-  const nav = useNavigate()
+  const nav = useNavigate();
   const signOut = () => {
-    nav('/admin/signin')
+    nav('/admin/signin');
     localStorage.removeItem('userInfo');
     // window.location.href = '/signin';
   };
@@ -64,6 +64,24 @@ function SideBar() {
       ),
     },
     {
+      content: 'Manufacturers',
+      url: '/admin/manufacturers',
+
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="27"
+          height="27"
+          fill="currentColor"
+          class="bi bi-card-heading"
+          viewBox="0 0 16 16"
+        >
+          <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+          <path d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z" />
+        </svg>
+      ),
+    },
+    {
       content: 'Orders',
       url: '/admin/orders',
 
@@ -99,7 +117,7 @@ function SideBar() {
     },
     {
       content: 'Sign out',
-      
+
       onClick: () => signOut(),
       icon: (
         <svg
@@ -127,7 +145,7 @@ function SideBar() {
         </Link>
         <div className="space-y-5">
           {menuItems.map((menu, index) => (
-            <SideBarItem key={index} content={menu.content} url={menu.url} Icon={menu.icon} onClick={menu.onClick}/>
+            <SideBarItem key={index} content={menu.content} url={menu.url} Icon={menu.icon} onClick={menu.onClick} />
           ))}
         </div>
       </div>

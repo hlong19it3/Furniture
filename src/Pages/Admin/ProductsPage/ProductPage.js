@@ -126,10 +126,20 @@ function ProductPage() {
     if (status === 'pre') {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage - 1) * limit);
+          }
+        });
       }
     } else {
       if (currentPage < total / limit - 1) {
         setCurrentPage(currentPage + 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage + 1) * limit);
+          }
+        });
       }
     }
   };
@@ -153,7 +163,7 @@ function ProductPage() {
     } catch (error) {
       console.log(error);
     }
-    URL.revokeObjectURL(fileImage.preview);
+    fileImage && URL.revokeObjectURL(fileImage.preview);
     setName('');
     setPrice(0);
     setSalePrice(0);
@@ -162,8 +172,8 @@ function ProductPage() {
     setManufacturerProduct(1);
     setCategoryProduct(1);
     setFileImage();
-    getProducts();
     setToggleModalCreate(false);
+    getProducts();
   };
   const handleEdit = async (id) => {
     try {
@@ -205,7 +215,7 @@ function ProductPage() {
     } catch (error) {
       console.log(error);
     }
-    URL.revokeObjectURL(fileImage.preview);
+    fileImage && URL.revokeObjectURL(fileImage.preview);
     setName('');
     setPrice(0);
     setSalePrice(0);
@@ -214,8 +224,8 @@ function ProductPage() {
     setManufacturerProduct(1);
     setCategoryProduct(1);
     setFileImage();
-    getProducts();
     setToggleModalEdit(false);
+    getProducts();
   };
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">

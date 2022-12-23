@@ -37,7 +37,7 @@ function Modal({ onCLickSubmit, toggleModal, action = 'create', inputs = [] }) {
                         onChange={(e) => input.setValue(e.target.value)}
                         defaultValue={action === 'edit' && input.defaultValue}
                       >
-                        <option value={null}>{input.selectTitle}</option>
+                        <option value="0">{input.selectTitle}</option>
 
                         {input.value.map((value) => (
                           <option key={value.id} value={value.id}>

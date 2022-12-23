@@ -1,25 +1,29 @@
 import { useEffect, useState } from 'react';
-import { ModalDetail } from '~/components/ModalDetail';
-
+import { Modal } from '~/components/Modal';
 import CustomAxios from '~/config/api';
 import useDebounce from '~/hooks/useDebounce';
 
 const limit = 5;
 
-function ProductPage() {
+function ManufacturerPage() {
   // const accessToken = localStorage.getItem();
   // axios.interceptors.request.use()
-  const [toggleModal, setToggleModal] = useState(false);
+  const [toggleModalCreate, setToggleModalCreate] = useState(false);
+  const [toggleModalEdit, setToggleModalEdit] = useState(false);
 
-  const [detailOrder, setDetailOrder] = useState();
-
-  const [orders, setOrder] = useState([]);
+  const [manufacturers, setManufacturers] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const debounced = useDebounce(searchValue, 600);
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [offSet, setOffSet] = useState(0);
   const [total, setTotal] = useState(0);
+
+  //edit id
+  const [editPreviewId, setEditPreviewId] = useState(0);
+
+  // form create or edit
+  const [manufacturerName, setManufacturerName] = useState('');
 
   const totalPage = Math.ceil(total / limit);
 
@@ -31,58 +35,56 @@ function ProductPage() {
     setPages(page);
 
     // eslint-disable-next-line
-  }, [orders]);
+  }, [manufacturers]);
 
   useEffect(() => {
-    getOrders();
+    getManufacturers();
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (!debounced.trim()) {
-      getOrders();
+      getManufacturers();
     } else {
-      searchOrder(debounced);
+      searchManufacturer(debounced);
     }
     // eslint-disable-next-line
   }, [debounced, offSet]);
 
   const tokens = JSON.parse(localStorage.getItem('userInfo'));
 
-  const getOrders = async () => {
-    const res = await CustomAxios.get('/api/v1/orders/', {
+  const getManufacturers = async () => {
+    const res = await CustomAxios.get('/api/v1/manufacturers/paginationAll', {
       headers: { 'x-accesstoken': tokens.accessToken },
       params: {
         limit: limit,
         offset: offSet,
       },
     });
-    setOrder(res.data.rows);
+    setManufacturers(res.data.rows);
     setTotal(res.data.count);
   };
-
-  const deleteOrder = async (id) => {
+  const deleteManufacturer = async (id) => {
     try {
-      await CustomAxios.delete(`/api/v1/orders/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
-      getOrders();
+      await CustomAxios.delete(`/api/v1/manufacturers/${id}`, { headers: { 'x-accesstoken': tokens.accessToken } });
+      getManufacturers();
     } catch (error) {
       console.log(error);
     }
   };
-
-  const searchOrder = async (value) => {
+  const searchManufacturer = async (value) => {
     try {
-      const res = await CustomAxios.get(`/api/v1/orders/search/${value}`, {
+      const res = await CustomAxios.get(`/api/v1/manufacturers/search/${value}`, {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
 
-      setOrder(res.data);
+      setManufacturers(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleSearchOrder = (e) => {
+  const handleSearch = (e) => {
     setSearchValue(e.target.value);
   };
 
@@ -111,33 +113,88 @@ function ProductPage() {
       }
     }
   };
-  const handleShowDetail = async (orderId) => {
+  const handleEdit = async (id) => {
     try {
-      const res = await CustomAxios.get(`/api/v1/orders/order-detail/${orderId}`, {
+      const manufacturerRes = await CustomAxios.get(`/api/v1/manufacturers/${id}`, {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
-
-      console.log(res.data);
-      setDetailOrder(res.data);
+      const res = manufacturerRes.data;
+      setManufacturerName(res.manufacturerName);
     } catch (error) {
       console.log(error);
     }
-    setToggleModal(true);
+    setEditPreviewId(id);
+    setToggleModalEdit(true);
   };
-  const handleToggleModal = () => {
-    setToggleModal(false);
-    setDetailOrder();
-    getOrders();
+  const handleSubmitEdit = () => {
+    try {
+      CustomAxios.put(`/api/v1/manufacturers/${editPreviewId}`, {
+        headers: { 'x-accesstoken': tokens.accessToken },
+        manufacturerName,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setManufacturerName('');
+    setToggleModalEdit(false);
+    getManufacturers();
   };
+  const handleSubmitCreate = (e) => {
+    e.preventDefault();
+    try {
+      CustomAxios.post('/api/v1/manufacturers/create', {
+        manufacturerName,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    setManufacturerName('');
+    getManufacturers();
+    setToggleModalCreate(false);
+  };
+
   return (
     <div className=" flex  flex-1 justify-center items-center p-10">
-      <div className=" w-full relative shadow-md sm:rounded-lg ">
-        <div className="flex justify-start">
-          <div className="mb-3 xl:w-96">
+      {toggleModalCreate && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Manufacturer name',
+              value: manufacturerName,
+              setValue: setManufacturerName,
+              placeHolder: 'Manufacturer name',
+            },
+          ]}
+          toggleModal={() => {
+            setToggleModalCreate(false);
+          }}
+          onCLickSubmit={handleSubmitCreate}
+        />
+      )}
+      {toggleModalEdit && (
+        <Modal
+          inputs={[
+            {
+              lable: 'Manufacturer name',
+              value: manufacturerName,
+              setValue: setManufacturerName,
+            },
+          ]}
+          action="edit"
+          toggleModal={() => {
+            setToggleModalEdit(false);
+            setManufacturerName('');
+          }}
+          onCLickSubmit={handleSubmitEdit}
+        />
+      )}
+      <div className=" w-full h-5/6 relative shadow-md sm:rounded-lg ">
+        <div className="flex justify-between">
+          <div className="mb-3 xl:w-96 justify-start">
             <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
               <input
                 value={searchValue}
-                onChange={handleSearchOrder}
+                onChange={handleSearch}
                 type="search"
                 className="form-control relative flex-auto min-w-0 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="Search"
@@ -146,56 +203,51 @@ function ProductPage() {
               />
             </div>
           </div>
+          <div className=" justify-end">
+            <div className="input-group relative flex flex-wrap items-stretch w-full mb-4 rounded">
+              <button
+                onClick={() => setToggleModalCreate(true)}
+                type="button"
+                className="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+              >
+                Create
+              </button>
+            </div>
+          </div>
         </div>
         <table className="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="py-3 px-6">
-                Name
+                Id
               </th>
               <th scope="col" className="py-3 px-6">
-                Address
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Status
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Cancel
-              </th>
-              <th scope="col" className="py-3 px-6">
-                Time
+                Manufacturer Name
               </th>
 
-              <th scope="col" className="py-3 px-6">
-                Phone
-              </th>
               <th scope="col" className="py-3 px-6">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, index) => (
+            {manufacturers.map((manufacturer, index) => (
               <tr
-                key={order.id}
+                key={manufacturer.id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                <td className="py-4 px-6">{order.User.firstName}</td>
-                <td className="py-4 px-6">{order.shippingAddress}</td>
-                <td className="py-4 px-6">{order.status}</td>
-                <td className="py-4 px-6">{order.cancelOrder === true ? 'Cancel' : 'No'}</td>
-                <td className="py-4 px-6">{order.createdAt.slice(0, 10)}</td>
-
-                <td className="py-4 px-6">{order.User.phone}</td>
+                <td className="py-4 px-6">{manufacturer.id}</td>
+                <td className="py-4 px-6">{manufacturer.manufacturerName}</td>
                 <td className="py-4 px-6">
                   <button
-                    onClick={() => handleShowDetail(order.id)}
+                    onClick={() => handleEdit(manufacturer.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
-                    Detail
-                  </button>{' '}
+                    Edit
+                  </button>
+                  &ensp;
                   <button
-                    onClick={() => deleteOrder(order.id)}
+                    onClick={() => deleteManufacturer(manufacturer.id)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Delete
@@ -275,9 +327,8 @@ function ProductPage() {
           </ul>
         </nav>
       </div>
-      {toggleModal && <ModalDetail toggleModal={handleToggleModal} detail={detailOrder} />}
     </div>
   );
 }
 
-export default ProductPage;
+export default ManufacturerPage;

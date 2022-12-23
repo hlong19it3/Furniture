@@ -85,10 +85,20 @@ function UserPage() {
     if (status === 'pre') {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage - 1) * limit);
+          }
+        });
       }
     } else {
       if (currentPage < total / limit - 1) {
         setCurrentPage(currentPage + 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage + 1) * limit);
+          }
+        });
       }
     }
   };

@@ -27,6 +27,7 @@ function CategoryPage() {
   const [total, setTotal] = useState(0);
 
   const totalPage = Math.ceil(total / limit);
+  console.log(pages);
 
   useEffect(() => {
     let page = [];
@@ -63,6 +64,7 @@ function CategoryPage() {
         offset: offSet,
       },
     });
+
     setCategory(res.data.rows);
     setTotal(res.data.count);
   };
@@ -106,10 +108,20 @@ function CategoryPage() {
     if (status === 'pre') {
       if (currentPage > 0) {
         setCurrentPage(currentPage - 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage - 1) * limit);
+          }
+        });
       }
     } else {
       if (currentPage < total / limit - 1) {
         setCurrentPage(currentPage + 1);
+        pages.forEach((page) => {
+          if (page === currentPage) {
+            setOffSet((currentPage + 1) * limit);
+          }
+        });
       }
     }
   };
@@ -117,10 +129,16 @@ function CategoryPage() {
   const handleSubmitCreate = (e) => {
     e.preventDefault();
     try {
-      CustomAxios.post('/api/v1/categories/create', {
-        type,
-        parentCategoryId,
-      });
+      CustomAxios.post(
+        '/api/v1/categories/create',
+        {
+          type,
+          parentCategoryId,
+        },
+        {
+          headers: { 'x-accesstoken': tokens.accessToken },
+        },
+      );
     } catch (error) {
       console.log(error);
     }
@@ -135,8 +153,9 @@ function CategoryPage() {
         headers: { 'x-accesstoken': tokens.accessToken },
       });
       const res = categoryRes.data;
-      console.log(res);
+
       setType(res.type);
+      // setParentCategoryId(res.Category.id);
       setParentCategoryId(res.categoryId);
     } catch (error) {
       console.log(error);
@@ -144,13 +163,18 @@ function CategoryPage() {
     setEditPreviewId(id);
     setToggleModalEdit(true);
   };
-  const handleSubmitEdit = () => {
+  const handleSubmitEdit = async () => {
     try {
-      CustomAxios.put(`/api/v1/categories/${editPreviewId}`, {
-        headers: { 'x-accesstoken': tokens.accessToken },
-        type,
-        parentCategoryId,
-      });
+      await CustomAxios.put(
+        `/api/v1/categories/${editPreviewId}`,
+        {
+          type,
+          parentCategoryId,
+        },
+        {
+          headers: { 'x-accesstoken': tokens.accessToken },
+        },
+      );
     } catch (error) {
       console.log(error);
     }

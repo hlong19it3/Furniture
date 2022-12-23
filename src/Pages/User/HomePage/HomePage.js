@@ -11,10 +11,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import { addToCart } from '~/reducers/cartReducer';
 
 function UserPage() {
+  // eslint-disable-next-line
   const [stateFilter, dispatchFilter] = useContext(FilterContext);
+  // eslint-disable-next-line
   const [stateCart, dispatchCart] = useCartContext();
 
-  console.log(stateFilter);
   const { state } = useLocation();
   const [stateLocal, setStateLocal] = useState({
     content: 'Welcome to Furniture Online Store!',
@@ -37,9 +38,11 @@ function UserPage() {
   }, []);
 
   useEffect(() => {
-    // if (stateFilter.categoryId !== 0) {
-    getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
-    // }
+    if (stateFilter.categoryId !== 0 || stateFilter.manufacturerId !== 0 || stateFilter.color !== '') {
+      getProductsByFilter(stateFilter.categoryId, stateFilter.manufacturerId, stateFilter.color);
+    } else {
+      getAllProduct();
+    }
   }, [stateFilter]);
 
   useEffect(() => {
@@ -52,6 +55,7 @@ function UserPage() {
     }, stateLocal.toastSignInTime);
 
     return () => clearTimeout(idTime);
+    // eslint-disable-next-line
   }, [state]);
   const getAllProduct = async () => {
     const product = await CustomAxios.get('/api/v1/products/', {
@@ -97,7 +101,6 @@ function UserPage() {
         manufacturerId,
         color,
       });
-      console.log(res.data);
       setAllProduct(res.data);
     } catch (error) {
       console.log(error);

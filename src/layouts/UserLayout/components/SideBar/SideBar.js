@@ -1,8 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import Tippy from '@tippyjs/react';
+import { useContext, useEffect, useState } from 'react';
+import { RiFilterOffFill } from 'react-icons/ri';
+
 import { Wrapper } from '~/components/SideBarContentWrapper';
 import CustomAxios from '~/config/api';
 import { FilterContext } from '~/contexts/FilterContextProvider';
-import { setCategory, setColor, setManufacturer } from '~/reducers/filterReducer';
+import { clearFilter, setCategory, setColor, setManufacturer } from '~/reducers/filterReducer';
 import SubCategory from './SubCategory';
 
 function SideBar() {
@@ -24,12 +27,13 @@ function SideBar() {
   };
 
   const getSubCategoriesByParentCategoryId = async (parentCategoryId) => {
-    const result = await CustomAxios.get(`/api/v1/categories/${parentCategoryId}`);
+    const result = await CustomAxios.get(`/api/v1/categories/parent/${parentCategoryId}`);
     setSubCategories(result.data);
   };
 
   const getManufacturersAll = async () => {
     const res = await CustomAxios.get('/api/v1/manufacturers/all');
+
     setManufacturers(res.data);
   };
 
@@ -46,47 +50,65 @@ function SideBar() {
     // eslint-disable-next-line
   }, []);
 
-  const handleSubmitManufacturer = async (manufacturerId) => {
-    try {
-      await CustomAxios.get(`/api/products/get-by-manufacturerId/${manufacturerId}`);
-    } catch (error) {
-      console.log(error);
-    }
-    setManufacturers();
+  const handleSubcategory = (id) => {
+    dispatchFilter(setCategory(id));
   };
   return (
     <div className="col-span-1 bg-white px-4 pb-6 shadow rounded ">
       <div className="divide-y divide-gray-200 space-y-5">
-        <Wrapper title={'CATEGORIES'}>
+        <div className="w-full h-6 flex items-center my-3 px-2">
+          <div className="flex-1 flex justify-end items-center">
+            {(stateFilter.categoryId !== 0) | (stateFilter.manufacturerId !== 0) | (stateFilter.color !== '') ? (
+              <Tippy content="Clear filter" placement="right">
+                <div
+                  onClick={() => dispatchFilter(clearFilter())}
+                  className="flex-[0.1]  p-1 rounded-full cursor-pointer flex justify-center items-center text-slate-200 bg-slate-500 hover:bg-slate-600 hover:text-white"
+                >
+                  <RiFilterOffFill />
+                </div>
+              </Tippy>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+        <Wrapper title={'CATEGORIES'} className="m-0">
           <div className="space-y-2">
             {categories.map((category, index) => {
               return (
                 !category.categoryId && (
-                  <div className="flex items-center" key={category.id}>
-                    <input
-                      type="radio"
-                      name="cat-1"
-                      id="cat-1"
-                      className="text-primary focus:ring-0 rounded-sm cursor-pointer"
+                  <div className="flex items-center  cursor-pointer" key={category.id}>
+                    <div
+                      className="flex items-center  cursor-pointer"
                       onClick={() => dispatchFilter(setCategory(category.id))}
-                    />
-                    <label
-                      htmlFor="cat-1"
-                      className="text-gray-600 ml-3 cusror-pointer"
-                      onMouseEnter={() => {
-                        setShowSubCategory(category.id);
-                        getSubCategoriesByParentCategoryId(category.id);
-                      }}
                     >
-                      {category.type}
-                    </label>
+                      <input
+                        type="radio"
+                        name="cat-1"
+                        id={`cat-${category.id}`}
+                        className="text-primary focus:ring-0 rounded-sm"
+                        checked={stateFilter.categoryId === category.id ? true : false}
+                        readOnly
+                      />
+                      <div
+                        htmlFor={`cat-${category.id}`}
+                        className="text-gray-600 ml-3 cusror-pointer"
+                        onMouseEnter={() => {
+                          setShowSubCategory(category.id);
+                          getSubCategoriesByParentCategoryId(category.id);
+                        }}
+                      >
+                        {category.type}
+                      </div>
+                    </div>
                     <SubCategory
                       title={category.type}
                       contents={subCategories}
                       showSubCategory={showSubCategory === category.id}
                       setShowSubCategory={setShowSubCategory}
+                      onClick={handleSubcategory}
+                      checked={stateFilter.categoryId}
                     />
-                    {/* <div className="ml-auto text-gray-600 text-sm">(15)</div> */}
                   </div>
                 )
               );
@@ -97,19 +119,22 @@ function SideBar() {
         <Wrapper className="pt-4" title={'Manufacturers'}>
           <div className="space-y-2">
             {manufacturers.map((manufacturer, index) => (
-              <div className="flex items-center" key={manufacturer.id}>
+              <div
+                className="flex items-center cursor-pointer"
+                key={manufacturer.id}
+                onClick={() => dispatchFilter(setManufacturer(manufacturer.id))}
+              >
                 <input
-                  // onChange={handleSubmitManufacturer}
-                  onClick={() => dispatchFilter(setManufacturer(manufacturer.id))}
                   type="radio"
                   name="brand-1"
-                  id="brand-1"
+                  id={`brand-${manufacturer.id}`}
                   className="text-primary focus:ring-0 rounded-xl cursor-pointer"
+                  checked={stateFilter.manufacturerId === manufacturer.id ? true : false}
+                  readOnly
                 />
-                <label htmlFor="brand-1" className="text-gray-600 ml-3 cusror-pointer">
+                <div htmlFor={`brand-${manufacturer.id}`} className="text-gray-600 ml-3 cusror-pointer">
                   {manufacturer.manufacturerName}
-                </label>
-                {/* <div className="ml-auto text-gray-600 text-sm">(15)</div> */}
+                </div>
               </div>
             ))}
           </div>
@@ -138,14 +163,15 @@ function SideBar() {
         <Wrapper className="pt-4" title={'Color'}>
           <div className="flex items-center gap-2">
             {allColors.map((color, index) => (
-              <div key={index} className="color-selector">
+              <div key={index} className="color-selector" onClick={(e) => dispatchFilter(setColor(e.target.value))}>
                 <input
                   value={color}
-                  onClick={(e) => dispatchFilter(setColor(e.target.value))}
                   type="radio"
                   name="color"
                   id={`color-${color}`}
                   className="hidden"
+                  checked={stateFilter.color === color ? true : false}
+                  readOnly
                 />
                 <label
                   htmlFor={`color-${color}`}
@@ -154,23 +180,6 @@ function SideBar() {
                 ></label>
               </div>
             ))}
-
-            {/* <div className="color-selector">
-              <input type="radio" name="color" id="black" className="hidden" />
-              <label
-                htmlFor="black"
-                className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
-                style={{ backgroundColor: '#000' }}
-              ></label>
-            </div>
-            <div className="color-selector">
-              <input type="radio" name="color" id="white" className="hidden" />
-              <label
-                htmlFor="white"
-                className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
-                style={{ backgroundColor: ' #fff' }}
-              ></label>
-            </div> */}
           </div>
         </Wrapper>
       </div>
