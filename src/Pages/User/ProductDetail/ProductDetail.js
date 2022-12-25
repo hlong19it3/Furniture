@@ -1,16 +1,22 @@
 import CryptoJS from 'crypto-js';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import { BiSend } from 'react-icons/bi';
+
 import { Image } from '~/components/Image';
 import CustomAxios, { baseURL } from '~/config/api';
 import useCartContext from '~/hooks/useCartContext';
 import { addToCart } from '~/reducers/cartReducer';
+import moment from 'moment';
+
 function ProductDetail() {
   const { product } = useParams();
   const getHash = CryptoJS.Rabbit.decrypt(product, 'hashUrlProductDetail');
   const productId = CryptoJS.enc.Utf8.stringify(getHash);
+  const nav = useNavigate();
 
+  const [comment, setComment] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [categoryId, setCategoryId] = useState(0);
   const [manufacturerId, setManufacturerId] = useState(0);
@@ -20,6 +26,12 @@ function ProductDetail() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   // eslint-disable-next-line
   const [stateCart, dispatchCart] = useCartContext();
+
+  useEffect(() => {
+    if (!productId) {
+      nav('/');
+    }
+  }, [product]);
 
   useEffect(() => {
     getProductById();
@@ -82,6 +94,92 @@ function ProductDetail() {
         fontSize: '16px',
       },
     });
+  };
+  const handleInputComment = (commentContent) => {
+    if (!commentContent.startsWith(' ') && !commentContent.startsWith('\n')) {
+      setComment(commentContent);
+    } else {
+      setComment('');
+      toast.error('Please input more than 5 words!', {
+        position: 'bottom-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+        style: {
+          fontSize: '16px',
+        },
+      });
+    }
+  };
+  const handleSubmitComment = async () => {
+    if (!comment.startsWith(' ') && !comment.startsWith('\n') && comment.length > 5) {
+      try {
+        const res = await CustomAxios.post(
+          '/api/v1/comments/create',
+          {
+            productId: productId,
+            content: comment,
+          },
+          {
+            headers: {
+              'x-accesstoken': JSON.parse(localStorage.getItem('userInfo')).accessToken,
+            },
+          },
+        );
+        if (res.status === 200) {
+          toast.success(res.data.msg, {
+            position: 'bottom-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+            style: {
+              fontSize: '16px',
+            },
+          });
+          getCommentByProductId();
+        } else {
+          toast.error(res.data.msg, {
+            position: 'bottom-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+            style: {
+              fontSize: '16px',
+            },
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      setComment('');
+    } else {
+      toast.error('Please input more than 5 words!', {
+        position: 'bottom-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+        style: {
+          fontSize: '16px',
+        },
+      });
+    }
   };
   return (
     productInfo && (
@@ -166,14 +264,27 @@ function ProductDetail() {
         </div>
         <div class="container pb-16">
           <h3 class="border-b border-gray-200 font-roboto text-gray-800 pb-3 font-medium">Comments</h3>
-          <div class="w-3/5 pt-6">
+          <div className=" overflow-hidden mt-2 py-2 px-4 rounded-2xl w-1/3 min-h-14 max-h-72 flex justify-start items-center border-2 border-slate-500">
+            <textarea
+              className="flex-1 h-full border-none outline-none border-transparent focus:shadow-none focus:border-transparent focus:border-none focus:outline-none text-lg caret-teal-500 "
+              onChange={(e) => handleInputComment(e.target.value)}
+              value={comment}
+            ></textarea>
+            <BiSend className="ml-2 cursor-pointer" onClick={handleSubmitComment} />
+          </div>
+          <div class="w-3/5 pt-6 flex flex-col-reverse">
             {comments.map((comment) => (
-              <div className="" key={comment.id}>
-                <h4 className="text-xl font-bold">
-                  {comment.User.firstName} {comment.User.lastName}
-                </h4>
+              <div key={comment.id}>
+                <div className="flex items-center">
+                  <h4 className="text-xl font-bold">
+                    {comment.User.firstName} {comment.User.lastName}
+                  </h4>
+                  <span className="text-xs font-normal ml-3 ">
+                    {moment(new Date(comment.createdAt).toISOString()).format('MMMM Do YYYY')}
+                  </span>
+                </div>
                 <p className="text-lg">{comment.content}</p>
-                <div className="w-1/3 h-[1px] bg-slate-500 mt-2"></div>
+                <div className="w-3/5 h-[1px] bg-slate-500 mt-2"></div>
               </div>
             ))}
           </div>
