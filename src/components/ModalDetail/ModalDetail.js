@@ -6,7 +6,7 @@ import { baseURL } from '~/config/api';
 import { Dialog } from '../Dialog';
 import { Image } from '../Image';
 
-function ModalDetail({ onCLickSubmit, toggleModal, detail }) {
+function ModalDetail({ onCLickSubmit, toggleModal, detail, from = 'admin' }) {
   const [statusOrder, setStatusOrder] = useState('');
   const [confirm, setConfirm] = useState();
   const [dialogCancelOrder, setDialogCancelOrder] = useState();
@@ -67,10 +67,10 @@ function ModalDetail({ onCLickSubmit, toggleModal, detail }) {
               &times;
             </button>
           </div>
-          <div className="flex my-3 border-b border-spacing-2 border-slate-400 overflow-y-auto">
-            <div className="w-full overflow-auto ">
+          <div className="flex-1 flex my-3 border-b border-spacing-2 border-slate-400 overflow-hidden">
+            <div className="w-full">
               <div className="flex w-full my-2 ">
-                <div className="flex-[0.5] flex flex-col text-base">
+                <div className="flex-[0.5] flex flex-col text-base h-detailModal overflow-y-auto">
                   <div className="text-2xl flex justify-center w-full mb-3 font-bold">Order Information</div>
                   <div className="flex ">
                     <div className="flex-[0.3] font-semibold">Shipping Address:</div>
@@ -78,32 +78,50 @@ function ModalDetail({ onCLickSubmit, toggleModal, detail }) {
                   </div>
                   <div className="flex ">
                     <div className="flex-[0.3] font-semibold">Ship Status:</div>
-                    {detail.order.status !== 'Delivered' && detail.order.cancelOrder === false ? (
-                      <select
+                    {from === 'admin' ? (
+                      detail.order.status !== 'Delivered' && detail.order.cancelOrder === false ? (
+                        <select
+                          className={
+                            statusOrder === 'Pending'
+                              ? 'flex-[0.7] text-cyan-700 border-none outline-none'
+                              : statusOrder === 'Shipping'
+                              ? 'flex-[0.7] text-yellow-700 border-none outline-none'
+                              : statusOrder === 'Delivered'
+                              ? 'flex-[0.7] text-green-700 border-none outline-none'
+                              : 'flex-[0.7] border-none outline-none'
+                          }
+                          defaultValue={detail.order.status}
+                          onChange={(e) => setStatusOrder(e.target.value)}
+                        >
+                          <option className="text-cyan-700" value={'Pending'}>
+                            Pending
+                          </option>
+                          <option className="text-orange-700" value={'Shipping'}>
+                            Shipping
+                          </option>
+                          <option className="text-green-700" value={'Delivered'}>
+                            Successful delivery
+                          </option>
+                        </select>
+                      ) : detail.order.cancelOrder === false ? (
+                        <div className="flex-[0.7] text-green-700 border-none outline-none"> Successful delivery</div>
+                      ) : (
+                        <div className="flex-[0.7] text-red-700 border-none outline-none"> ''</div>
+                      )
+                    ) : detail.order.cancelOrder === false ? (
+                      <div
                         className={
-                          statusOrder === 'Pending'
+                          detail.order.status === 'Pending'
                             ? 'flex-[0.7] text-cyan-700 border-none outline-none'
-                            : statusOrder === 'Shipping'
+                            : detail.order.status === 'Shipping'
                             ? 'flex-[0.7] text-yellow-700 border-none outline-none'
-                            : statusOrder === 'Delivered'
+                            : detail.order.status === 'Delivered'
                             ? 'flex-[0.7] text-green-700 border-none outline-none'
                             : 'flex-[0.7] border-none outline-none'
                         }
-                        defaultValue={detail.order.status}
-                        onChange={(e) => setStatusOrder(e.target.value)}
                       >
-                        <option className="text-cyan-700" value={'Pending'}>
-                          Pending
-                        </option>
-                        <option className="text-orange-700" value={'Shipping'}>
-                          Shipping
-                        </option>
-                        <option className="text-green-700" value={'Delivered'}>
-                          Successful delivery
-                        </option>
-                      </select>
-                    ) : detail.order.cancelOrder === false ? (
-                      <div className="flex-[0.7] text-green-700 border-none outline-none"> Successful delivery</div>
+                        {detail.order.status}
+                      </div>
                     ) : (
                       <div className="flex-[0.7] text-red-700 border-none outline-none"> ''</div>
                     )}
@@ -145,7 +163,7 @@ function ModalDetail({ onCLickSubmit, toggleModal, detail }) {
                     <div className="flex-[0.7]"> {detail.order.User.email}</div>
                   </div>
                 </div>
-                <div className="flex-[0.5]  flex flex-col overflow-auto px-2">
+                <div className="flex-[0.5]  flex flex-col overflow-auto px-2 h-detailModal overflow-y-auto">
                   {detail.orderDetail.map((product, index) => (
                     <div
                       key={index}
@@ -175,7 +193,7 @@ function ModalDetail({ onCLickSubmit, toggleModal, detail }) {
               </div>
             </div>
           </div>
-          {detail.order.status !== 'Delivered' && detail.order.cancelOrder === false && (
+          {from === 'admin' && detail.order.status !== 'Delivered' && detail.order.cancelOrder === false && (
             <div className="flex items-center justify-around">
               <button
                 onClick={handleUpdateStatusOrder}

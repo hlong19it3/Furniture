@@ -11,6 +11,7 @@ import configFile from '~/config';
 import { AuthContext } from '~/contexts/AuthContextProvider';
 import useCartContext from '~/hooks/useCartContext';
 import { Search } from '../Search';
+import images from '~/assets/images';
 
 const MENU = [
   {
@@ -52,11 +53,7 @@ function Header() {
       <header className="flex py-4 shadow-sm bg-white h-24 ">
         <div className="container flex items-center justify-between">
           <Link to={configFile.routes.home}>
-            <img
-              src="https://marketplace.canva.com/EAFN9EmLAUY/1/0/1600w/canva-black-minimalist-furniture-logo-IBXwe4b5u8M.jpg"
-              alt="Logo"
-              className="w-32"
-            />
+            <img src={images.logoDefault} alt="Logo" className="w-32" />
           </Link>
 
           <div className="w-full max-w-xl relative flex">

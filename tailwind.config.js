@@ -9,6 +9,7 @@ module.exports = {
       },
       height: {
         cart: 'calc(100vh - 182.39px)',
+        detailModal: 'calc(100vh - 104px)',
       },
     },
   },

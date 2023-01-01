@@ -19,6 +19,7 @@ const CartContextProvider = ({ children }) => {
           shippingAddress: localStorage.getItem('shippingAddress'),
           sessionId: localStorage.getItem('session'),
           totalPrice: localStorage.getItem('discounted'),
+          paymentMethodId: 1,
         },
         {
           headers: {
@@ -30,10 +31,10 @@ const CartContextProvider = ({ children }) => {
           dispatchCart(clearCart());
         }
       });
-      
+
       localStorage.removeItem('session');
       localStorage.removeItem('shippingAddress');
-      localStorage.removeItem('discounted')
+      localStorage.removeItem('discounted');
     }
   }, []);
   if (stateCart.length > 0) {

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { FaPhoneAlt } from 'react-icons/fa';
 import { IoMdMail } from 'react-icons/io';
 import { MdLocationOn } from 'react-icons/md';
+import { BsFillCreditCardFill, BsCashStack } from 'react-icons/bs';
 
 import CustomAxios from '~/config/api';
 import { AuthContext } from '~/contexts/AuthContextProvider';
@@ -20,6 +21,7 @@ function Cart() {
   const [priceSale, setPriceSale] = useState(0);
   const [discounted, setDiscounted] = useState(0);
   const [shippingAddress, setShippingAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState(1);
 
   useEffect(() => {
     if (stateCart.length > 0) {
@@ -62,27 +64,61 @@ function Cart() {
             price: cart.currentPrice,
           },
           quantity: cart.quantity,
-          
         });
       });
-      try {
-        const purchase = await CustomAxios.post(
-          '/api/v1/stripe/create-checkout-session',
-          {
-            discounted,
-            purchaseItem,
-            userOrder: currentUser.id,
-            shippingAddress,
-          },
-          {
-            headers: { 'x-accesstoken': JSON.parse(token).accessToken },
-          },
-        );
-        localStorage.setItem('session', purchase.data.id);
-        localStorage.setItem('shippingAddress', shippingAddress);
-        localStorage.setItem('discounted', discounted);
-        window.location.href = purchase.data.url;
-      } catch (error) {}
+      if (paymentMethod === 1) {
+        try {
+          const purchase = await CustomAxios.post(
+            '/api/v1/stripe/create-checkout-session',
+            {
+              discounted,
+              purchaseItem,
+              userOrder: currentUser.id,
+              shippingAddress,
+            },
+            {
+              headers: { 'x-accesstoken': JSON.parse(token).accessToken },
+            },
+          );
+          localStorage.setItem('session', purchase.data.id);
+          localStorage.setItem('shippingAddress', shippingAddress);
+          localStorage.setItem('discounted', discounted);
+          window.location.href = purchase.data.url;
+        } catch (error) {}
+      } else if (paymentMethod === 2) {
+        try {
+          const purchase = await CustomAxios.post(
+            '/api/v1/stripe/check-session',
+            {
+              totalPrice: discounted,
+              order: stateCart,
+              shippingAddress,
+              paymentMethodId: paymentMethod,
+            },
+            {
+              headers: { 'x-accesstoken': JSON.parse(token).accessToken },
+            },
+          );
+          if (purchase.status === 200) {
+            localStorage.removeItem('cart');
+            nav('/checkout-success');
+          } else {
+            toast.error('Server busy!', {
+              position: 'bottom-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored',
+              style: {
+                fontSize: '16px',
+              },
+            });
+          }
+        } catch (error) {}
+      }
     } else {
       toast.error('Please input your address!', {
         position: 'bottom-right',
@@ -147,7 +183,7 @@ function Cart() {
       <div className="w-2/5 flex flex-col px-5 py-2 text-base">
         <div className="text-2xl flex justify-center w-full mb-3">Info Order</div>
         {currentUser ? (
-          <div className="flex flex-col">
+          <div className="w-full flex flex-col">
             <div className="flex justify-between items-center">
               <div className=" flex-[0.48] flex flex-col">
                 <span className="bottom-0 left-0">Fisrt Name</span>
@@ -186,6 +222,54 @@ function Cart() {
                   className="flex-1 border-none outline-none px-3"
                   placeholder="Shipping address"
                 />
+              </div>
+            </div>
+            <div className=" flex items-center justify-center py-2">
+              <div className="w-4/5 flex items-center justify-between">
+                <div
+                  onClick={() => setPaymentMethod(1)}
+                  className={
+                    paymentMethod === 1
+                      ? 'bg-slate-600 text-white flex-[0.4] flex items-center  cursor-pointer border-2 border-slate-400 py-3 px-2 rounded-lg '
+                      : 'flex-[0.4] flex items-center  cursor-pointer border-2 border-slate-400 py-3 px-2 rounded-lg '
+                  }
+                >
+                  <BsFillCreditCardFill className="w-8 h-8 mr-2" />
+                  <label htmlFor="prepaid" className="flex-1 flex justify-center cursor-pointer">
+                    Pay with card
+                  </label>
+                  <input
+                    className="hidden"
+                    type="radio"
+                    name="payment"
+                    id="prepaid"
+                    value={1}
+                    readOnly
+                    checked={paymentMethod === 1}
+                  />
+                </div>
+                <div
+                  onClick={() => setPaymentMethod(2)}
+                  className={
+                    paymentMethod === 2
+                      ? 'bg-slate-600 text-white flex-[0.4] flex items-center  cursor-pointer border-2 border-slate-400 py-3 px-2 rounded-lg '
+                      : 'flex-[0.4] flex items-center  cursor-pointer border-2 border-slate-400 py-3 px-2 rounded-lg '
+                  }
+                >
+                  <BsCashStack className="w-8 h-8 mr-2" />
+                  <label htmlFor="postpaid" className="flex-1 flex justify-center cursor-pointer">
+                    Cash
+                  </label>
+                  <input
+                    className="hidden"
+                    type="radio"
+                    name="payment"
+                    id="postpaid"
+                    value={2}
+                    readOnly
+                    checked={paymentMethod === 2}
+                  />
+                </div>
               </div>
             </div>
           </div>

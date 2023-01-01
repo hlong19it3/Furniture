@@ -24,9 +24,7 @@ function Checkout() {
           <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"></path>
         </svg>
         <div>
-          <h5 class="mb-2 text-2xl font-semibold tracking-tight text-green-600 dark:text-white">
-            Purchase Successfully!
-          </h5>
+          <h5 class="mb-2 text-2xl font-semibold tracking-tight text-green-600 dark:text-white">Order Successfully!</h5>
         </div>
         <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">
           Thank you for your trust and support! {currentUser && currentUser.firstName + ' ' + currentUser.lastName}.
