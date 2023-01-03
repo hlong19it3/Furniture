@@ -4,6 +4,7 @@ export const routes = {
   adminRoute: '/admin/:adminRoute',
   resetPassword: '/resetpassword',
   home: '/',
+  aboutUs: '/aboutus',
   signInUser: '/signin',
   signUpUser: '/signup',
   profile: '/profile',

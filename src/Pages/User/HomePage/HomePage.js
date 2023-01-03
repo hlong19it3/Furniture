@@ -24,6 +24,7 @@ function UserPage() {
   });
 
   const [allProduct, setAllProduct] = useState([]);
+  // console.log(allProduct);
 
   const handleSelectSorting = (e) => {
     if (e.target.value === 'price-low-to-high') getPriceLowToHigh();

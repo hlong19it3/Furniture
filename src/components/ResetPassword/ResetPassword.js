@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import './ResetPassword.css';
 import CustomAxios from '../../config/api';
 
 function Login(props) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
 
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
@@ -20,25 +19,34 @@ function Login(props) {
       email,
     });
     if (res.status === 201) {
-      setError(res.data.msg);
+      toast.error(res.data.msg, {
+        position: 'bottom-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+        style: {
+          fontSize: '16px',
+        },
+      });
     }
     if (res.status === 200) {
+      navigate('/signin', {
+        state: { toastSignInTime: 5000, content: 'New password was sent to your email!', type: 'success' },
+      });
     }
-    navigate('/signin', {
-      state: { toastSignInTime: 5000, content: 'New password was sent to your email!', type: 'success' },
-    });
-    setStatus('New password was sent to your email!');
   };
 
   return (
     <div className="bg">
+      <ToastContainer />
       <div className="login-page">
         <h4> FURNITURE ONLINE STORE </h4>
         <form onSubmit={handleSubmit} className="form-login">
           <input value={email} placeholder="Email" required onChange={handleChangeEmail}></input>
-          <p>{error}</p>
-          <p>{status}</p>
-
           <input type="submit" value="Reset password"></input>
 
           <Link to="/signin" style={{ textDecoration: 'none', fontSize: '19px' }}>

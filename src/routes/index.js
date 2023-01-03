@@ -7,6 +7,7 @@ import AdminPages from '~/Pages/Admin';
 import { DashBoard } from '~/Pages/Admin/DashBoardPage';
 import { SignInPage } from '~/Pages/Admin/SignInPage';
 import { HomePage } from '~/Pages/User/HomePage';
+import { AboutUs } from '~/Pages/User/AboutUs';
 import { ProductDetail } from '~/Pages/User/ProductDetail';
 import { Cart } from '~/Pages/User/Cart';
 import { Checkout } from '~/Pages/User/Checkout';
@@ -40,6 +41,10 @@ export const userRoutes = [
   {
     path: configFile.routes.home,
     component: HomePage,
+  },
+  {
+    path: configFile.routes.aboutUs,
+    component: AboutUs,
   },
   {
     path: configFile.routes.resetPassword,

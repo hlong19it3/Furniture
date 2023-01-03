@@ -119,12 +119,12 @@ function Header() {
               <a href="../" className="text-gray-200 hover:text-white transition">
                 Home
               </a>
-              <a href="##" className="text-gray-200 hover:text-white transition">
+              <Link to={configFile.routes.aboutUs} className="text-gray-200 hover:text-white transition">
                 About us
-              </a>
-              <a href="##" className="text-gray-200 hover:text-white transition">
+              </Link>
+              <Link to={configFile.routes.aboutUs} className="text-gray-200 hover:text-white transition">
                 Contact us
-              </a>
+              </Link>
             </div>
             {tokens ? (
               <button href="##" onClick={handleSignOut} className="text-gray-200 hover:text-white transition">

@@ -109,7 +109,7 @@ function Login(props) {
 
         <button
           onClick={handleSubmit}
-          className="bg-slate-500 border border-slate-800 w-40 mt-3 text-xl p-1 text-fuchsia-50 hover:text-white hover:bg-slate-800 rounded-md"
+          className="bg-slate-500 border border-slate-800 w-40  mt-3 text-xl p-1 text-fuchsia-50 hover:text-white hover:bg-slate-800 rounded-md"
         >
           SIGN IN
         </button>
