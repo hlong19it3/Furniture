@@ -30,7 +30,7 @@ function ChangePassword() {
 
   const handleChangePassword = async () => {
     if (newPassword === confirmNewPassword) {
-      if (confirmNewPassword.length > 8) {
+      if (confirmNewPassword.length > 8 || confirmNewPassword.length === 8) {
         try {
           const changePassword = await CustomAxios.put(
             '/api/v1/users/update-password',
